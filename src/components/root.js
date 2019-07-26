@@ -6,6 +6,7 @@ import Authentication from './Authentication';
 import ProjectDetails from './ProjectDetails';
 import {Switch, Route} from 'react-router-dom';
 
+
 const Root = ()=> (
     <Switch>
         <Route exact path="/" component={LandingPage} />

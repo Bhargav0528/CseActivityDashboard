@@ -45,7 +45,20 @@ class SignUpForm extends Component {
               sec: this.state.sec,
               usn: this.state.usn
             },()=>{
-              this.props.history.push('/projects/');
+              fire.database().ref(`internships/students/${fire.auth().currentUser.uid}`).set(
+                {
+                  fullName: this.state.name,
+                  email: this.state.email,
+                  usn:this.state.usn,
+                  sem: this.state.sem,
+                  sec: this.state.sec,
+                  usn: this.state.usn,
+                  doingInternship:false,
+                  notifications:[{internshipid:"Admin",notifText:"Welcome to Internship Portal"}]
+                },()=>{
+                  this.props.history.push('/projects/');
+                }
+              )
             }
           )
         }

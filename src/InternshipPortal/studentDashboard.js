@@ -1,6 +1,6 @@
 import React from 'react';
 import './App.css';
-import firebase from './firebase.js'
+import firebase from '../config/firebaseConfig'
 import Select from 'react-select'
 
 

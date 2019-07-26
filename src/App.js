@@ -10,6 +10,12 @@ import LandingPage from './components/LandingPage';
 import Profile from './components/Profile';
 import Authentication from './components/Authentication';
 import ProjectDetails from './components/ProjectDetails';
+import APPjs from './InternshipPortal/App';
+import {MainPage, NewInternship, NewInternshipLink, MiniTestForm, Internship, CompletedInternship, OpenInternship, SendNotification} from './InternshipPortal/adminDashboard.js';
+import MinitestDemo from './InternshipPortal/minitestStudent';
+import {StudentDashboard} from './InternshipPortal/studentDashboard';
+import {FeedbackForm} from './InternshipPortal/feedbackForm';
+import {SubmitProfile, ProfileSubmitted} from './InternshipPortal/studentProfile';
 
 class App extends Component {
     state = {user:null, fullName:""}
@@ -60,7 +66,7 @@ authListener(){
         <Nav className="ml-auto">
         <div>
         <Link style={{fontSize:16, marginRight:20, color:'#fff'}} to="/projects">Projects</Link>
-        <Link style={{fontSize:16, marginRight:20, color:'#fff'}} to="/profile">Features</Link>
+        <Link style={{fontSize:16, marginRight:20, color:'#fff'}} to="/Internship">Internship</Link>
         {this.profileCheck()}
         <Link style={{fontSize:16, marginRight:20, color:'#fff'}}to="#">Pricing</Link>
         </div>
@@ -74,6 +80,21 @@ authListener(){
           <Route path="/users" component={Profile} />
           <Route path="/auth" component={Authentication} />
           <Route path="/project/:ids" component={ProjectDetails} />
+          
+        <Route exact path="/Internship" component={APPjs}/>
+        <Route exact path="/studentdashboard" component={StudentDashboard}/>
+        <Route path="/admindashboard" component={MainPage}/>
+        <Route path="/newinternship" component={NewInternship}/>
+        <Route path="/createminitest" component={MiniTestForm}/>
+        <Route path="/internship" component={Internship}/>
+        <Route path="/newinternshiplink" component={NewInternshipLink}/>
+        <Route path="/completedinternship" component={CompletedInternship}/>
+        <Route path="/openinternship" component={OpenInternship}/>
+        <Route path="/sendnotification" component={SendNotification}/>
+        <Route exact path="/profile" component={SubmitProfile}/>
+        <Route path="/profile/submitted" component={ProfileSubmitted}/>
+        <Route path="/studentdashboard/feedback" component={FeedbackForm}/>
+        <Route path="/minitestdemo" component={MinitestDemo}/>
         </Switch>
         </div>
 </div>

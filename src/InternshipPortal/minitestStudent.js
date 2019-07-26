@@ -1,7 +1,7 @@
 import React from 'react';
 import {Link} from 'react-router-dom';
 import './adminDashboard.css';
-import firebase from './firebase.js';
+import firebase from '../config/firebaseConfig';
 
 class Header extends React.Component{
 	constructor(){
