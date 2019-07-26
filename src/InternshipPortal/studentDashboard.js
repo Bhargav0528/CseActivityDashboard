@@ -1,5 +1,5 @@
 import React from 'react';
-import './App.css';
+import './StudentDashboard.css';
 import firebase from '../config/firebaseConfig'
 import Select from 'react-select'
 
