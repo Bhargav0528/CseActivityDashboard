@@ -647,6 +647,7 @@ class InternshipMiniTest extends React.Component{
 	render(){
 		return(
 		<div>
+{this.state.minitest?<div>
 		<hr/>
 		<h3 className="internship1">Test</h3>
 		<b>Scores (%):</b><br/>
@@ -672,6 +673,7 @@ class InternshipMiniTest extends React.Component{
 		<input type="time" id="minitestNotifTime" required="required"/>
 		<button onClick={this.completeMinitestNotif} className="popupMinitestNotif">Send</button><br/><br/>
 		</div>	
+</div>:""}
 		</div>
 		);
 	}
