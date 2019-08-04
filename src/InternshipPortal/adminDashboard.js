@@ -1,7 +1,7 @@
 import React from 'react';
 import {Link} from 'react-router-dom';
 import './adminDashboard.css';
-import fire as firebase from '../config/firebase.js';
+import firebase from '../config/firebase.js';
 import Select from 'react-select';
 import "react-step-progress-bar/styles.css";
 import { ProgressBar, Step } from "react-step-progress-bar";
