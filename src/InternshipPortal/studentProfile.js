@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import './studentProfile.css';
-import firebase from './firebase.js';
+import firebase from '../config/firebase.js';
 
 class App extends Component {
   constructor(){
