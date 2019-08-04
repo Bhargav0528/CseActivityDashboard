@@ -107,7 +107,7 @@ apply(id){
 			firebase.database().ref("internships/students/"+uid1+"/notifications").update(sval);
 		});
 		firebase.database().ref("internships/internship/"+id).update(x).then(function(){
-			window.location.href="/profile";
+			window.location.href="/sprofile";
 		});
 	});
 }
