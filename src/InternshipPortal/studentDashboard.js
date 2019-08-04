@@ -1,6 +1,6 @@
 import React from 'react';
 import './StudentDashboard.css';
-import firebase from '../config/firebase.js'
+import firebase from '../config/firebaseConfig.js';
 import Select from 'react-select'
 
 
