@@ -95,6 +95,7 @@ authListener(){
 	<Route path="/submitted" component={ProfileSubmitted}/>
 	<Route path="/studentdashboard/feedback" component={FeedbackForm}/>
 	<Route path="/minitest" component={MinitestConduct}/>
+		<Route path="/editinternship" component={EditInternship}/>
         </Switch>
         </div>
 </div>
