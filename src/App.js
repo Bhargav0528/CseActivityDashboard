@@ -11,7 +11,7 @@ import Profile from './components/Profile';
 import Authentication from './components/Authentication';
 import ProjectDetails from './components/ProjectDetails';
 import APPjs from './InternshipPortal/App';
-import {MainPage, NewInternship, NewInternshipLink, MiniTestForm, Internship, CompletedInternship, OpenInternship, SendNotification} from './InternshipPortal/adminDashboard.js';
+import {MainPage, NewInternship, NewInternshipLink, MiniTestForm, Internship, CompletedInternship, OpenInternship, SendNotification, EditInternship} from './InternshipPortal/adminDashboard.js';
 import MinitestConduct from './InternshipPortal/minitestStudent.js';
 import {StudentDashboard} from './InternshipPortal/studentDashboard';
 import {FeedbackForm} from './InternshipPortal/feedbackForm';
