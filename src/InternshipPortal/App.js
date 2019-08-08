@@ -37,10 +37,10 @@ class App extends React.Component{
 		{
 			if(this.state.user.teacher)
 			{
-				this.props.history.push('/adminDashboard')
+				this.loginAdmin();
 			}
 			else{
-				this.props.history.push('/studentDashboard')
+				this.loginStudent();
 			}
 		}
 	}
