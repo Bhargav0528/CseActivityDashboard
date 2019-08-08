@@ -1,0 +1,1102 @@
+@media only screen and (min-width:950px){
+*{
+		margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",   sans-serif !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+a{	text-decoration:none;	}
+button:focus{	outline:none;	}
+input{	line-height:20px;}
+p.unauthorisedAccess{
+	font-size:25pt;
+	font-weight:bold;
+	margin-left:10px;
+}
+span.unauthorisedAccess{
+	width:100%;
+	font-size:15pt;
+	padding:10px;
+	margin:0;
+}
+div.header{
+	padding:5px;
+	position:relative;
+	top:0;
+	left:0;
+	right:0;
+	background-color:rgb(0,108,180);
+}
+span.header{
+	display:inline;
+	font-weight:bold;
+	font-size:18pt;
+	position:relative;
+	margin-left:10px;
+	top:0;
+	color:white;
+}
+img.icon{
+	width:30px;
+	height:30px;
+	display:inline-block;
+	padding:2px;
+}
+.sidebar{	display:none;	}
+div.actiondiv{
+	margin:0;
+	padding:0;
+	border:none;
+}
+div.actionsdiv{
+	width:20%;
+	position:fixed;
+	right:0;
+	top:120px;
+	margin:5px 5px 0px 5px;
+	padding:8px;
+	border-radius:8px;
+	border:solid 1px gray;
+	text-align:center;
+}
+h3.actionsdiv{
+	padding:0px;
+	margin:0px 5px 10px 0px;
+	display:block;
+}
+button.actionsdiv{
+	display:block;
+	padding:6px;
+	border-radius:16px;
+	border:none;
+	width:100%;
+	margin:5px 0px 5px 0px;
+}
+button.actionsdiv:hover{	background-color:darkgray;	}
+button.actionsdiv1{
+	display:block;
+	padding:6px;
+	border-radius:16px;
+	border:none;
+	width:100%;
+	margin:5px 0px 5px 0px;
+}
+button.actionsdiv1:hover{	background-color:darkgray;	}
+div.closedDiv{
+	padding:8px;
+	border-radius:8px;
+	border:solid 1px gray;
+	position:relative;
+	top:0px;
+	left:0px;
+	margin:5px 0px 0px 5px;
+	width:75%;
+}
+div.ongoingDiv{
+	padding:8px;
+	border-radius:8px;
+	border:solid 1px gray;
+	position:relative;
+	top:0px;
+	left:0px;
+	margin:5px 0px 0px 5px;
+	width:75%;
+}
+h3.closedDiv, h3.ongoingDiv{	
+	margin:0px 0px 3px 0px;
+	padding:0px;
+	font-size:22pt;
+	font-weight:600;
+	line-height:90%;
+	font-family:"Roboto","Helvetica Neue","Arial",sans-serif !important;	}
+div.formClass{
+	position:relative;
+	top:0px;
+	left:0px;
+	right:0;
+	margin:5px 0px 0px 5px;
+}
+div.questionForm{
+	margin:65px 5px 5px 5px;
+	border-radius:8px;
+	padding:4px;
+	width:97%;
+	background-color:lightgray;
+}
+div.questionForm h4{	padding:0px; margin:4px;	}
+div.questionForm b{		padding:0px; margin:4px;	}
+input.minitestq{
+	position:relative;
+	width:98%;
+	margin:0px 5px 0px 5px;	
+	padding:4px;
+}
+.option{
+	display:inline-block;
+	width:20%;
+	margin:0px 3px 0px 3px;
+	padding:4px;
+}
+button.btn{
+	padding:8px;
+	background-color:rgb(0,108,180);
+	color:white;
+	border:none;
+	border-radius:16px;
+	font-weight:bold;
+	margin:0px 0px 4px 8px;
+}
+button.btn:hover{	background-color:rgb(0,70,140);	color:white;	}
+button.btn1{
+	padding:8px;
+	background-color:darkgreen;
+	color:white;
+	border:none;
+	border-radius:16px;
+	font-weight:bold;
+	margin:0px 0px 4px 8px;
+}
+button.btn1:hover{background-color:green;}
+ul.questionForm{	list-style-type:none;	}
+div.questionFilled{
+	position:relative;
+	left:-35px;
+	width:100%;
+	margin:5px 5px 5px 0px;
+	border-radius:8px;
+	padding:8px;
+	background-color:lightgray;
+}
+div.questionFilled p{	padding:0px; margin:2px 0px 2px 0px;	}
+p.optionFilled1{
+	position:relative;
+	display:inline-block;
+	width:25%;
+	padding:0px;
+	margin:3px 0px 0px 0px;
+}
+button.removebtn{
+	background:transparent;
+	float:right;
+	font-size:18pt;
+	font-weight:bold;
+	padding:4px 4px 4px 4px;
+	border:none;
+}
+button.removebtn:hover{color:red;}
+table.formClass{width:100%;margin:0px;padding:0px;}
+tr.formClass{width:100%;padding:0px;}
+th.formClass{
+	width:20%;
+	text-align:left; 
+	border:none;
+	font-size:12pt;
+}
+td.formClass{text-align:left;}
+td.formClass input{
+	width:100%;
+	padding:4px;
+	border:1px solid lightgray;
+	line-height:20px;
+}
+input.formClass2{
+	padding:4px;
+	border:1px solid lightgray;
+}
+td.formClass input:invalid{border-color:red;}
+td.formClass textarea{
+	width:100%;
+	height:50px;
+	padding:4px;
+	margin:4px 0px 4px 0px;
+}
+td.formClass1 input{width:30%; text-align:left; margin-right:30px;}
+td.formClass1 select{width:auto; text-align:left;}
+button.formClass{
+	color:white;
+	background-color:rgb(0,108,180);
+	padding:8px 16px 8px 16px;
+	margin:4px;
+	border-radius:16px;
+	font-weight:bold;
+	border:none;
+}
+button.formClass:hover{	background-color:rgb(0,70,140);}
+div.internship{
+	padding:8px;
+	border-radius:8px;
+	background-color:lightgray;
+	margin:3px 0px 3px 0px;
+}
+div.unapprovedinternship{
+	padding:8px;
+	border-radius:8px;
+	background-color:#ffef9e;
+	margin:3px 0px 3px 0px;
+}
+h3.internship{
+	padding:0;
+	margin:0;
+	font-size:16pt;
+	font-weight:bold;
+}
+p.internshipCompany{
+	padding:0px;
+	margin:0px 0px 0px 8px;
+	font-size:12pt;
+	color:rgb(100,100,100);
+}
+p.internship{
+	padding:0px 0px 4px 0px;
+	margin:0;
+	font-size:12pt;
+}
+h3.internshipStatus{
+	display:inline-block;
+	margin:0px 10px 0px 0px;
+	padding:0px;
+	font-size:16pt;
+	line-height:20px;
+}
+div.internshipStatus{
+	width:92%;
+	display:inline-block;
+	margin:0px 0px 0px 30px;
+	padding:0;
+}
+button.internship{
+	background-color:rgb(0,108,180);
+	color:white;
+	border:none;
+	border-radius:8px;
+	padding:6px;
+	float:right;
+	margin:0px 2px 4px 2px;
+	z-index:3;
+}
+button.internship:hover{	background-color:rgb(0,150,220);	}
+div.internship1{
+	padding:8px;
+	border-radius:8px;
+	border:solid 1px gray;
+	position:relative;
+	top:0px;
+	left:0px;
+	margin:5px 0px 0px 5px;
+	width:75%;
+}
+button.internship1{
+	position:absolute;
+	top:5px;
+	right:5px;
+	float:right;
+	background:transparent;
+	padding:10px;
+	color:darkgray;
+	border:none;
+	font-size:20pt;
+}
+button.internship1:hover{color:red;}
+h3.internship1{padding:0px; margin:0px 30px 0px 0px;}
+h4.internship1{padding:0px; margin:0px;}
+p.internship1{padding:4px; margin:0px;}
+b.internship1{padding:4px; margin:0px;}
+ul.internship1{margin-top:0px; margin-bottom:0px;}
+div.linkcreate{
+	position:relative;
+	top:60px;
+	left:0;
+	width:100%;
+	padding:4px;
+}
+input.linkcreate{
+	width:50%;
+	padding:4px;
+	border-radius:8px;
+	margin:4px;
+}
+button.linkcreate{
+	width:20%;
+	padding:4px;
+	background-color:lightgray;
+	border-radius:8px;
+	margin:4px;
+}
+input.linkcreate1{
+	width:90%;
+	padding:4px;
+	border-radius:8px;
+	margin:4px;
+}
+span.internship{	margin:0px 30px 0px 0px; padding:0px; width:30%;}
+table.internship1{	width:100%;}
+div.questions{
+	position:relative;
+	margin-top:70px;
+}
+div.notificationAdmin{
+	width:95%;
+	padding:12px;
+	border:1px solid black;
+	border-radius:8px;
+	margin:20px;
+	position:relative;
+	top:0;
+	left:0;
+}
+button.notificationAdmin{
+	position:absolute;
+	top:4px;
+	right:4px;
+	float:right;
+	background:transparent;
+	padding:8px;
+	border:none;
+	font-size:18pt;
+}
+button.notificationAdmin:hover{	color:red;}
+h3.notificationAdmin{
+	display:block;
+	margin:4px;
+	padding:0;
+	font-size:18pt;
+}
+input.notificationAdmin{
+	width:98%;
+	margin:0px 0px 16px 0px;
+	padding:8px;
+	border-radius:8px;
+	border:1px solid darkgray;	
+}
+input.notificationAdmin:invalid{ border:1px solid red; }
+span.statusText{
+	background-color:green;
+	color:white;
+	padding:4px;
+	border-radius:4px;
+	float:right;
+}
+button.statusText{
+	background-color:rgb(0,108,180);
+	color:white;
+	padding:6px;
+	border-radius:4px;
+	float:right;
+	border:none;
+}
+button.statusText:hover{background-color:rgb(0,80,160);}
+button.temp{
+	position:absolute;
+	top:40px;
+	right:10px;
+	z-index:20;
+}
+span.internship1Scores{
+	display:block;
+}
+#confirmSend{
+	display:none;
+	text-decoration:none;
+}
+#mailText{
+	display:none;
+}
+table.internship1StudentApplied{
+	margin:0;
+	padding:0;
+	border:1px solid black;
+	border-collapse: collapse;
+	width:100%;
+}
+tr.internship1StudentApplied{
+	margin:0px;
+	padding:0;
+	border:1px solid black;
+}
+tr.internship1StudentNS{
+	margin:0px;
+	padding:0;
+	border:1px solid black;
+	background-color:darkgray;
+}
+tr.internship1StudentApplied td,th{
+	margin:0px;
+	padding:0px;
+	border:1px solid black;
+	text-align:center;
+}
+tr.internship1StudentNS td{
+	margin:0px;
+	padding:0px;
+	border:1px solid black;
+	text-align:center;
+	text-decoration:line-through;
+}
+tr.internship3StudentApplied{
+	margin:0;
+	padding:0;
+	border:1px solid black;
+	background-color:#e4ffd9;
+}
+tr.internship3StudentApplied td{
+	margin:0px;
+	padding:0px;
+	border:1px solid black;
+	text-align:center;
+}
+a.internship1StudentApplied{  color:rgb(0,108,180); margin:0;}
+a.internship2StudentApplied{ margin:0px 0px 0px 10px;}
+div.popupMinitestNotif{
+	display:none;
+	background-color:white;
+	z-index:10;
+	width:100%;
+}
+button.popupMinitestNotif{
+	float:right;
+	padding:8px;
+	background-color:rgb(0,108,180);
+	color:white;
+	border:none;
+	border-radius:16px;
+	font-weight:bold;
+	margin:2px;
+}
+input.popupMinitestNotif{
+	width:40%;
+}
+input.internshipMiniTest{
+	width:100px;
+	margin:4px;
+}
+button.internshipMiniTest{
+	padding:8px;
+	background-color:rgb(0,108,180);
+	color:white;
+	border:none;
+	border-radius:16px;
+	font-weight:bold;
+	margin:2px;
+}
+button.internshipMiniTest:hover{
+	background-color:rgb(0,70,140);	
+}
+@keyframes loading{
+	from{ transform:rotate(0deg);}
+	to{ transform:rotate(360deg);}
+}
+img.loadicon{
+	animation-timing-function: linear;
+	animation-name:loading;
+	animation-duration:0.5s;
+	animation-delay:0s;
+	animation-iteration-count: 10;
+	display:none;
+}
+img.loadingicon{
+	animation-timing-function: linear;
+	animation-name:loading;
+	animation-duration:0.5s;
+	animation-delay:0s;
+	animation-iteration-count: infinite;
+	width:100px;
+	height:100px;
+	margin:100px;
+}
+textarea.remarks{
+	width:98%;
+	padding:4px;
+	border:1px solid lightgray;
+	border-radius:4px;
+	height:100px;
+}
+button.remarks{
+	margin:4px;
+}
+button.internshipIconbtn{
+	padding:4px;
+	background-color:rgb(0,108,180);
+	color:white;
+	border:none;
+	border-radius:16px;
+	font-weight:bold;
+	margin:0px 0px 4px 8px;
+}
+button.internshipIconbtn:hover{background-color:rgb(0,70,140);}
+img.internshipIcon{
+	width:30px;
+	height:30px;
+	padding:0;
+	margin:0;
+}
+table.internshipStatus{
+	border:none;
+	padding:0;
+	width:100%;
+	margin:0px 0px 10px 0px;
+}
+td.internshipStatus{
+	margin:0;
+	padding:0;
+	width:20%;
+	text-align:left;
+}
+td.internshipStatus span{
+	margin:0;
+	padding:2px 4px 2px 4px;
+	background-color:white;
+	border-radius:4px;
+	cursor:default;
+}
+button.shortlistButton{
+	padding:6px;
+	background-color:lightgray;
+	color:black;
+	border:none;
+	border-radius:4px;
+	font-weight:bold;
+	font-size:14pt;
+	margin:0px;
+}
+button.shortlistButton:hover{
+	background-color:gray;	
+	color:white;
+}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@media only screen and (max-width:950px){
+*{
+	margin: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+a{	text-decoration:none;}
+p.unauthorisedAccess{
+	font-size:25pt;
+	font-weight:bold;
+	margin-left:10px;
+}
+span.unauthorisedAccess{
+	width:100%;
+	font-size:15pt;
+	padding:0px;
+	margin:0;
+}
+div.header{
+	padding:4px;
+	position:relative;
+	top:0;
+	left:0;
+	right:0;
+	background-color:rgb(0,108,180);
+}
+span.header{
+	display:inline;
+	font-weight:bold;
+	font-size:14pt;
+	position:relative;
+	margin-left:5px;
+	top:0px;
+	color:white;
+}
+img.icon{ 
+	display:none; 
+}
+button.sidebar{
+	display:inline;
+	position:relative;
+	top:0;
+	left:0;
+	height:20px;
+	width:20px;
+	padding:3px;
+	margin:0px;
+	background:transparent;
+	border:none;
+	color:white;
+}
+img.sidebar{
+	width:100%;
+	height:100%;
+	padding:0;
+	margin:0;	
+}
+div.sidebar{
+	display:none;
+	visibility:hidden;
+	position:absolute;
+	top:0;
+	left:0;
+	right:0;
+	bottom:0;
+	background-color:rgba(255,255,255,0.9);
+	z-index:3;
+}
+button.sidebarclose{
+	position:absolute;
+	top:0;
+	right:0;
+	padding:0;
+	margin:0;
+	width:40px;
+	height:40px;
+	color:black;
+	font-size:20pt;
+	font-weight:bold;
+	background-color:rgba(255,255,255,0);
+	border:none;
+}
+div.actiondiv{
+	display:none;
+
+}
+div.actionsdiv{
+	padding:0px;
+	margin-top:40px;
+	border:none;
+	text-align:center;
+	width:auto;
+	position:static;
+}
+h3.actionsdiv{
+	display:none;
+}
+button.actionsdiv{
+	padding:6px;
+	border-radius:8px;
+	width:100%;
+	margin:2px 0px 2px 0px;
+	font-size:12pt;
+}
+button.actionsdiv:hover{
+	background-color:darkgray;
+}
+button.actionsdiv1{
+display:none;}
+div.mainPageInternshipPortal{width:100%;}
+div.closedDiv{
+	padding:3px;
+	border-radius:8px;
+	border:solid 1px gray;
+	max-height:300px;
+	overflow:scroll;
+	position:relative;
+	top:0px;
+	left:0px;
+	margin:5px 0px 0px 5px;
+	width:100%;
+}
+div.ongoingDiv{
+	padding:3px;
+	border-radius:8px;
+	border:solid 1px gray;
+	position:relative;
+	left:0px;
+	top:30px;
+	max-height:300px;
+	overflow:scroll;
+	margin:5px 0px 0px 5px;
+	width:100%;
+}
+h3.closedDiv, h3.ongoingDiv{
+	margin:0px;
+	padding:0px;
+	font-size:18pt;
+	line-height:90%;
+	font-family:"Roboto","Helvetica Neue","Arial",sans-serif !important;
+}
+div.questionForm{
+	margin:65px 5px 5px 5px;
+	border-radius:8px;
+	padding:4px;
+	width:97%;
+	background-color:lightgray;
+}
+div.questionForm h4{	padding:0px; margin:4px;	}
+div.questionForm b{		padding:0px; margin:4px;	}
+div.formClass{
+	position:relative;
+	top:30px;
+	left:0px;
+	right:0;
+	margin:3px 0px 0px 3px;
+}
+div.internship1{
+	padding:4px;
+	position:relative;
+	top:35px;
+	left:0;
+}
+button.internship1{position:absolute; top:3px; right:3px;}
+h3.internship1{margin:0px 25px 0px 0px; padding:0;}
+h4.internship1{margin:0;padding:0;}
+p.internship1{padding:0; margin:0;}
+input.minitestq{
+	position:relative;
+	width:98%;
+	margin:0px 5px 0px 5px;	
+	padding:4px;
+}
+.option{
+	display:inline-block;
+	width:20%;
+	margin:0px 3px 0px 3px;
+	padding:4px;
+}
+button.btn{
+	padding:8px;
+	background-color:rgb(0,108,180);
+	color:white;
+	border:none;
+	border-radius:16px;
+	font-weight:bold;
+	margin:0px 0px 4px 8px;
+}
+button.btn:hover{	background-color:rgb(0,70,140);	color:white;	}
+button.btn1{
+	padding:8px;
+	background-color:darkgreen;
+	color:white;
+	border:none;
+	border-radius:16px;
+	font-weight:bold;
+	margin:0px 0px 4px 8px;
+}
+button.btn1:hover{background-color:green;}
+ul.questionForm{	list-style-type:none;	}
+div.questionFilled{
+	position:relative;
+	left:-35px;
+	width:100%;
+	margin:5px 5px 5px 0px;
+	border-radius:8px;
+	padding:8px;
+	background-color:rgb(230,230,0);
+}
+div.questionFilled p{	padding:0px; margin:2px 0px 2px 0px;	}
+p.optionFilled1{
+	position:relative;
+	display:inline-block;
+	width:25%;
+	padding:0px;
+	margin:3px 0px 0px 0px;
+}
+button.removebtn{
+	background:transparent;
+	float:right;
+	font-size:18pt;
+	font-weight:bold;
+	padding:4px 4px 4px 4px;
+	border:none;
+}
+button.removebtn:hover{color:red;}
+table.formClass{width:100%;margin:0px;padding:0px;}
+tr.formClass{width:100%;padding:0px;}
+th.formClass{width:20%;text-align:left; border:none;}
+td.formClass{text-align:left;}
+td.formClass input{width:98%;padding:4px; border:1px solid lightgray;}
+td.formClass input[type=time]{width:50%;padding:4px; border:1px solid lightgray;}
+td.formClass input:invalid{border-color:red;}
+td.formClass textarea{
+	width:98%;
+	height:50px;
+	padding:4px;
+	margin:4px 0px 4px 0px;
+}
+td.formClass1 input[type=number]{width:30%; text-align:left; margin-right:30px;}
+td.formClass1 select{width:auto; text-align:left;}
+div.internship{
+	padding:8px;
+	border-radius:8px;
+	background-color:lightgray;
+	margin:3px 0px 3px 0px;
+}
+h3.internship{
+	padding:0;
+	margin:0;
+	font-size:16pt;
+	font-weight:bold;
+}
+p.internshipCompany{
+	padding:0px;
+	margin:0px 0px 0px 8px;
+	font-size:12pt;
+	color:rgb(100,100,100);
+}
+p.internship{
+	padding:0px 0px 4px 0px;
+	margin:0;
+	font-size:12pt;
+}
+h3.internshipStatus{
+	display:inline-block;
+	margin:0px 10px 0px 0px;
+	padding:0px;
+	font-size:16pt;
+}
+div.internshipStatus{
+	width:90%;
+	display:inline-block;
+	margin:0px 0px 0px 25px;
+	padding:0;
+}
+button.internship{
+	background-color:rgb(0,108,180);
+	color:white;
+	border:none;
+	border-radius:8px;
+	padding:6px;
+	float:right;
+	margin:0px 2px 4px 2px;
+	z-index:3;
+}
+button.internship:hover{	background-color:rgb(0,150,220);	}
+h3.internship1{padding:0px; margin:0px 30px 0px 0px;}
+h4.internship1{padding:0px; margin:0px;}
+p.internship1{padding:4px; margin:0px;}
+b.internship1{padding:4px; margin:0px;}
+ul.internship1{margin:0;}
+div.linkcreate{
+	position:relative;
+	top:60px;
+	left:0;
+	width:100%;
+	padding:4px;
+}
+input.linkcreate{
+	width:50%;
+	padding:4px;
+	border-radius:8px;
+	margin:4px;
+}
+button.linkcreate{
+	width:20%;
+	padding:4px;
+	background-color:lightgray;
+	border-radius:8px;
+	margin:4px;
+}
+input.linkcreate1{
+	width:90%;
+	padding:4px;
+	border-radius:8px;
+	margin:4px;
+}
+span.internship{	margin:0px 30px 0px 0px; padding:0px; width:30%;}
+table.internship1{	
+	width:100%; 
+	border-collapse:collapse; 
+	border:1px solid gray;
+
+}
+table.internship1 td,th{	
+	padding:0;
+	margin:0;
+	border-collapse:collapse; 
+	border:1px solid gray;
+	text-align:center;
+}
+div.questions{
+	position:relative;
+	margin-top:70px;
+}
+div.notification{
+	width:80%;
+	padding:12px;
+	border:1px solid black;
+	border-radius:8px;
+	margin:20px;
+	position:relative;
+	top:0;
+	left:0;
+}
+button.notification{
+	position:absolute;
+	top:4px;
+	right:4px;
+	float:right;
+	background:transparent;
+	padding:8px;
+	border:none;
+	font-size:18pt;
+}
+button.notification:hover{	color:red;}
+h3.notification{
+	display:block;
+	margin:4px;
+	padding:0;
+}
+input.notification{
+	width:98%;
+	margin:0px 0px 16px 0px;
+	padding:8px;
+	border-radius:8px;
+	border:1px solid darkgray;
+}
+span.statusText{
+	background-color:green;
+	color:white;
+	padding:4px;
+	border-radius:4px;
+	float:right;
+}
+button.statusText{
+	background-color:rgb(0,108,180);
+	color:white;
+	padding:6px;
+	border-radius:4px;
+	float:right;
+	border:none;
+}
+button.statusText:hover{background-color:rgb(0,80,160);}
+button.temp{
+	position:absolute;
+	top:40px;
+	right:10px;
+	z-index:20;
+}
+span.internship1Scores{
+	display:block;
+}
+#confirmSend{
+	display:none;
+	text-decoration:none;
+}
+#mailText{
+	display:none;
+}
+table.internship1StudentApplied{
+	margin:0;
+	padding:0;
+	border:1px solid black;
+	border-collapse: collapse;
+	width:100%;
+}
+tr.internship1StudentApplied{
+	margin:0;
+	padding:0;
+	border:1px solid black;
+}
+tr.internship1StudentApplied td,th{
+	margin:0;
+	padding:0;
+	border:1px solid black;
+	text-align:center;
+}
+a.internship1StudentApplied{ color:rgb(0,108,180);}
+div.popupMinitestNotif{
+	display:none;
+	background-color:white;
+	z-index:10;
+	width:75%;
+	height:600px;
+}
+input.internshipMiniTest{
+	width:100px;
+	margin:4px;
+}
+button.internshipMiniTest{
+	padding:8px;
+	background-color:rgb(0,108,180);
+	color:white;
+	border:none;
+	border-radius:16px;
+	font-weight:bold;
+	margin:2px;
+}
+button.internshipMiniTest:hover{
+	background-color:rgb(0,70,140);	
+}
+@keyframes loading{
+	from{ transform:rotate(0deg);}
+	to{ transform:rotate(360deg);}
+}
+img.loadicon{
+	animation-timing-function: linear;
+	animation-name:loading;
+	animation-duration:1s;
+	animation-delay:0s;
+	animation-iteration-count: 10;
+	display:none;
+}
+img.loadingicon{
+	animation-timing-function: linear;
+	animation-name:loading;
+	animation-duration:0.5s;
+	animation-delay:0s;
+	animation-iteration-count: infinite;
+	width:100px;
+	height:100px;
+	margin:100px;
+}
+textarea.remarks{
+	width:98%;
+	padding:4px;
+	border:1px solid lightgray;
+	border-radius:4px;
+	height:100px;
+}
+button.remarks{
+	margin:4px;
+}
+button.internshipIconbtn{
+	padding:4px;
+	background-color:rgb(0,108,180);
+	color:white;
+	border:none;
+	border-radius:16px;
+	font-weight:bold;
+	margin:0px 0px 4px 8px;
+}
+button.internshipIconbtn:hover{background-color:rgb(0,70,140);}
+img.internshipIcon{
+	width:30px;
+	height:30px;
+	padding:0;
+	margin:0;
+}
+table.internshipStatus{
+	border:none;
+	padding:0;
+	width:100%;
+	margin:0px 0px 5px 0px;
+}
+td.internshipStatus{
+	margin:0;
+	padding:0;
+	width:20%;
+	text-align:left;
+}
+button.shortlistButton{
+	padding:8px;
+	background-color:rgb(0,108,180);
+	color:white;
+	border:none;
+	border-radius:4px;
+	font-size:14pt;
+	font-weight:bold;
+	margin:0px;
+}
+button.shortlistButton:hover{
+	background-color:rgb(0,70,140);	
+}
+}
