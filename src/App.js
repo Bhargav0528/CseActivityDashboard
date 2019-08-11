@@ -60,7 +60,7 @@ authListener(){
   render() {
     return (
       <div className="nav-bar">
-        <Navbar bg="dark" variant="dark" className="navbar" sticky="top">
+        <Navbar bg="dark" variant="dark" className="navbar">
         <img src="https://img.collegepravesh.com/2018/10/DSI-Bangalore-Logo.png" style={{width:'40px', height:'40px', marginRight:'20px'}} />
         <Navbar.Brand href="#home">CSE Dashboard</Navbar.Brand>
         <Nav className="ml-auto">
@@ -95,7 +95,7 @@ authListener(){
 	<Route path="/submitted" component={ProfileSubmitted}/>
 	<Route path="/studentdashboard/feedback" component={FeedbackForm}/>
 	<Route path="/minitest" component={MinitestConduct}/>
-		<Route path="/editinternship" component={EditInternship}/>
+	<Route path="/editinternship" component={EditInternship}/>
         </Switch>
         </div>
 </div>
