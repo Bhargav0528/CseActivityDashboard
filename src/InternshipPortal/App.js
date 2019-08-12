@@ -1,5 +1,4 @@
 import React from 'react';
-import logo from './logo.svg';
 import firebase,{auth,provider} from '../config/firebaseConfig';
 
 class App extends React.Component{
