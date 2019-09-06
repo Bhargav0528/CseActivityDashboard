@@ -10,20 +10,29 @@
 
 li.studentProfileDefault { 
   padding-left:1px; 
+  width:100%;
 }
 
 li.studentProfileDefault::before { /* Insert content that looks like bullets */
   padding-right: 2px;/* Or a color you prefer */
 
 }
+table.studentProfileDefault{
+	width:100%;
+}
+tr.studentProfileDefault{
+	width:100%;
+}
+td.studentProfileDefault{
+	width:95%;
+}
 input.studentProfileDefault[type=text]{
   height: 20%;
-  width: 20%;
+  width: 100%;
   padding-right: 20px;
   margin: 4px 0;
   box-sizing: border-box;
 }
-
 textarea.studentProfileDefault{
   position:absolute;
   bottom: 40;

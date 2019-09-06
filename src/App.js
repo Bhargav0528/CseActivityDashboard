@@ -11,8 +11,8 @@ import Profile from './components/Profile';
 import Authentication from './components/Authentication';
 import ProjectDetails from './components/ProjectDetails';
 import APPjs from './InternshipPortal/App';
-import {MainPage, NewInternship, NewInternshipLink, MiniTestForm, Internship, CompletedInternship, OpenInternship, SendNotification} from './InternshipPortal/adminDashboard.js';
-import MinitestDemo from './InternshipPortal/minitestStudent';
+import {MainPage, NewInternship, NewInternshipLink, MiniTestForm, Internship, SendNotification, EditInternship, StudentFeedbackCompany, SkillSearch} from './InternshipPortal/adminDashboard.js';
+import MinitestConduct from './InternshipPortal/minitestStudent.js';
 import {StudentDashboard} from './InternshipPortal/studentDashboard';
 import {FeedbackForm} from './InternshipPortal/feedbackForm';
 import {SubmitProfile, ProfileSubmitted} from './InternshipPortal/studentProfile';
@@ -28,11 +28,12 @@ authListener(){
     fire.auth().onAuthStateChanged((user) =>{
       //console.log(user);
       if(user){
-
+		if(!user.isAnonymous){
         fire.database().ref(`users/${fire.auth().currentUser.uid}/`).on('value', (snap)=>{
             this.setState({user:fire.auth().currentUser.uid, fullName:snap.val().fullName});
         })
-
+		}
+		else{this.setState({user:null});}
         
         //localStorage.setItem('user',user.uid);
       }else{
@@ -60,7 +61,7 @@ authListener(){
   render() {
     return (
       <div className="nav-bar">
-        <Navbar bg="dark" variant="dark" className="navbar" sticky="top">
+        <Navbar bg="dark" variant="dark" className="navbar">
         <img src="https://img.collegepravesh.com/2018/10/DSI-Bangalore-Logo.png" style={{width:'40px', height:'40px', marginRight:'20px'}} />
         <Navbar.Brand href="#home">CSE Dashboard</Navbar.Brand>
         <Nav className="ml-auto">
@@ -80,21 +81,21 @@ authListener(){
           <Route path="/users" component={Profile} />
           <Route path="/auth" component={Authentication} />
           <Route path="/project/:ids" component={ProjectDetails} />
-          
         <Route exact path="/Internship" component={APPjs}/>
-        <Route exact path="/studentdashboard" component={StudentDashboard}/>
-        <Route path="/admindashboard" component={MainPage}/>
-        <Route path="/newinternship" component={NewInternship}/>
-        <Route path="/createminitest" component={MiniTestForm}/>
-        <Route path="/internship" component={Internship}/>
-        <Route path="/newinternshiplink" component={NewInternshipLink}/>
-        <Route path="/completedinternship" component={CompletedInternship}/>
-        <Route path="/openinternship" component={OpenInternship}/>
-        <Route path="/sendnotification" component={SendNotification}/>
-        <Route exact path="/profile" component={SubmitProfile}/>
-        <Route path="/profile/submitted" component={ProfileSubmitted}/>
-        <Route path="/studentdashboard/feedback" component={FeedbackForm}/>
-        <Route path="/minitestdemo" component={MinitestDemo}/>
+	<Route exact path="/studentdashboard" component={StudentDashboard}/>
+	<Route path="/admindashboard" component={MainPage}/>
+	<Route path="/createminitest" component={MiniTestForm}/>
+	<Route path="/internship" component={Internship}/>
+	<Route path="/newinternshiplink" component={NewInternshipLink}/>
+	<Route path="/sendnotification" component={SendNotification}/>
+	<Route exact path="/sprofile" component={SubmitProfile}/>
+	<Route path="/submitted" component={ProfileSubmitted}/>
+	<Route path="/studentdashboard/feedback" component={FeedbackForm}/>
+	<Route path="/minitest" component={MinitestConduct}/>
+		<Route path="/editinternship" component={EditInternship}/>
+		<Route path="/skillsearchinternship" component={SkillSearch}/>
+		<Route path="/newinternship" component={NewInternship}/>
+		<Route path="/studentfeedbackinternship" component={StudentFeedbackCompany}/>
         </Switch>
         </div>
 </div>

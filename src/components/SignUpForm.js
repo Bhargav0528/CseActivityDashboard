@@ -14,7 +14,8 @@ class SignUpForm extends Component {
             usn:'',
             sem:'',
             sec:'',
-            loading:false
+            loading:false,
+            selectedOption:'Student'
         };
 
         this.handleChange = this.handleChange.bind(this);
@@ -43,7 +44,7 @@ class SignUpForm extends Component {
               usn:this.state.usn,
               sem: this.state.sem,
               sec: this.state.sec,
-              usn: this.state.usn
+              teacher:this.state.selectedOption === 'Teacher'? true : false,
             },()=>{
               fire.database().ref(`internships/students/${fire.auth().currentUser.uid}`).set(
                 {
@@ -52,8 +53,8 @@ class SignUpForm extends Component {
                   usn:this.state.usn,
                   sem: this.state.sem,
                   sec: this.state.sec,
-                  usn: this.state.usn,
                   doingInternship:false,
+                  teacher:this.state.selectedOption === 'Teacher'? true : false,
                   notifications:[{internshipid:"Admin",notifText:"Welcome to Internship Portal"}]
                 },()=>{
                   this.props.history.push('/projects/');
@@ -65,6 +66,30 @@ class SignUpForm extends Component {
         )
     }
 
+    handleOptionChange(changeEvent) {
+
+      if(changeEvent.target.value == 'Teacher')
+      {
+         document.getElementById("sem").disabled = true;
+         document.getElementById("sec").disabled = true;
+         document.getElementById("usn").disabled = true;
+         
+         this.setState({sem:'Not Applicable', usn:'Not Applicable', sec:'Not Applicable' })
+      }
+      else
+      {
+        document.getElementById("sem").disabled = false;
+         document.getElementById("sec").disabled = false;
+         document.getElementById("usn").disabled = false;
+
+         this.setState({sem:'', usn:'', sec:'' })
+         
+      }
+      this.setState({
+          selectedOption: changeEvent.target.value
+        })
+    }
+    
     loadButton()
     {
       if(this.state.loading)
@@ -83,7 +108,27 @@ class SignUpForm extends Component {
     render() {
         return (
         <div className="FormCenter">
-            <form onSubmit={this.handleSubmit} className="FormFields">
+          <form onSubmit={this.handleSubmit} className="FormFields">
+
+            <div style={{display:'flex'}}>
+              <div className="radio">
+                <label>
+                  <input type="radio" value="Student" 
+                        checked={this.state.selectedOption === 'Student'} 
+                        onChange={this.handleOptionChange.bind(this)} />
+                  Student
+                </label>
+                </div>
+              <div className="radio">
+                <label>
+                  <input type="radio" value="Teacher" 
+                          checked={this.state.selectedOption === 'Teacher'} 
+                          onChange={this.handleOptionChange.bind(this)} />
+                  Teacher
+                </label>
+              </div>
+            </div>
+    
               <div className="FormField">
                 <label className="FormField__Label" htmlFor="name">Full Name</label>
                 <input type="text" id="name" className="FormField__Input" placeholder="Enter your full name" name="name" value={this.state.name} onChange={this.handleChange} />

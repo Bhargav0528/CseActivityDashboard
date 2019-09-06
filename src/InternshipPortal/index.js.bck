@@ -2,7 +2,7 @@
 import ReactDOM from 'react-dom';
 import './index.css';
 import {MainPage, NewInternship, NewInternshipLink, MiniTestForm, Internship, CompletedInternship, OpenInternship, SendNotification} from './adminDashboard.js';
-import MinitestDemo from './minitestStudent.js';
+import MinitestConduct from './minitestStudent.js';
 import App from './App.js';
 import {StudentDashboard} from './studentDashboard.js';
 import {FeedbackForm} from './feedbackForm.js';
@@ -24,9 +24,9 @@ ReactDOM.render(
 	<Route path="/openinternship" component={OpenInternship}/>
 	<Route path="/sendnotification" component={SendNotification}/>
 	<Route exact path="/profile" component={SubmitProfile}/>
-	<Route path="/profile/submitted" component={ProfileSubmitted}/>
+	<Route path="/submitted" component={ProfileSubmitted}/>
 	<Route path="/studentdashboard/feedback" component={FeedbackForm}/>
-	<Route path="/minitestdemo" component={MinitestDemo}/>
+	<Route path="/minitest" component={MinitestConduct}/>
 </div>
 </Router>, document.getElementById('root'));
 

@@ -1,6 +1,6 @@
 import React from 'react';
-import './App.css';
-import firebase from '../config/firebaseConfig'
+import './StudentDashboard.css';
+import firebase from '../config/firebaseConfig.js';
 import Select from 'react-select'
 
 
@@ -17,11 +17,13 @@ class App extends React.Component{
 	this.toggleNotifications=this.toggleNotifications.bind(this);
 	this.loadSkills=this.loadSkills.bind(this);
 	this.gotoMiniTest=this.gotoMiniTest.bind(this);
+	this.setStatefunc=this.setStatefunc.bind(this);
+  this.reset=this.reset.bind(this);
   }
   gotoMiniTest(){
 	  window.location.href="/minitest";
   }
-loaddata(snapshot){
+loaddata(snapshot,uid){
     let vals=[];
     for(var i in snapshot.val()){
       if(snapshot.val()[i].isComplete==false){
@@ -31,8 +33,8 @@ loaddata(snapshot){
         let dt4=dt2.getDate()+"-"+(dt2.getMonth()+1)+"-"+dt2.getFullYear();
         let add={
           id:i,
-          approved:temp.approved,
           applicationdt:dt3,
+		  applied:temp.applied,
           companyName:temp.companyName,
           companyPhone:temp.companyPhone,
           companyEmail:temp.companyMail,
@@ -44,18 +46,29 @@ loaddata(snapshot){
           title:temp.title,
           workCategory:temp.workCategory,
           workTimings:temp.workTimings,
-          show:true
-
+          show:true,
+		  studentapplied:false
         };
-        if(add.approved){
-        vals.push(add);}
+        if(temp.approved && temp.isComplete==false && temp.startdt>Date.now() && temp.applicationdt>Date.now()){
+			vals.push(add);
+		}
       }
     }
     let newState=this.state;
     newState.internships=vals;
     this.setState(newState);
-    console.log(this.state);
   }
+  reset(){
+   let st=this.state.internships;
+   for(var i=0;i<st.length;i++){
+    st[i].show=true;
+   }
+   this.setState({internships:st,selectedOption:[]});
+   document.getElementById("Workfromhome").checked=false;
+   document.getElementById("part-time").checked=false;
+   document.getElementById("full-time").checked=false;   
+}
+
 loadSkills(s){
   let skills=s.val();
   let sk=[];
@@ -65,10 +78,13 @@ loadSkills(s){
   }
   this.setState({options:sk});
 }
-
+setStatefunc(p){
+	this.setState(p);
+}
 componentDidMount(){
-	//let uid1=firebase.auth().currentUser.uid;
-	let uid1="u1"; //Remove after integration
+	setTimeout(()=>{
+  if(firebase.auth().currentUser){
+	  let uid1=firebase.auth().currentUser.uid;
   let tmp=this.loaddata;
   let tmp2=this.loadSkills;
   let tmp3=this.checkTestFeedback;
@@ -76,115 +92,173 @@ componentDidMount(){
     tmp2(snapshot1);
   });
  firebase.database().ref("internships/internship").orderByChild("applicationdt").once('value').then(function(snapshot) {
-tmp(snapshot);
+tmp(snapshot,uid1);
 });
+let statefunc=this.setStatefunc;
+	firebase.database().ref("internships/students/"+uid1).once("value").then(function(s){
+		let t=s.val();
+	statefunc({studentdata:t});	});}
+	else{
+		window.location.href="/";
+	}
+	},5000);
 }
-//Modified code, check while integrating -------------------------------------------------------------
 apply(id){
-	//let uid1=firebase.auth().currentUser.uid;
-	let uid1="u1"; //Remove after integration
+	let uid1=firebase.auth().currentUser.uid;
+	if(this.state.studentdata.teacher){
+		return;
+	}
 	firebase.database().ref("internships/internship/"+id).once('value').then(function(snapshot) {
 		var x=snapshot.val();
-		if(x.applied!=null) x.applied.push(uid1);
+		let isindb=false;
+		if(x.applied!=null){
+			if(x.applied.includes(uid1)){isindb=true;}
+			else{			x.applied.push(uid1);}
+		}
 		else{x.applied=[]; x.applied.push(uid1);}
-		if(x.minitestscores!=null)	x.minitestscores.push({uid:uid1,marks:-1});
+		if(x.minitestscores!=null){
+			
+			for(var i in x.minitestscores){
+				if(x.minitestscores[i].uid==uid1){
+					isindb=true;
+				}
+			}
+			if(!isindb){
+		x.minitestscores.push({uid:uid1,marks:-1});}}
 		else{
 			x.minitestscores=[];
 			x.minitestscores.push({uid:uid1,marks:-1});
 		}
-		firebase.database().ref("internships/internship/"+id).update(x).then(function(){
-			window.location.href="/profile";
+		if(isindb){
+			alert("You have already applied");
+		}
+		else{
+		firebase.database().ref("internships/students/"+uid1+"/notifications").once("value").then(function(s){
+			let sval=s.val();
+			sval.push({internshipid:id,notifText:"You have enrolled for "+x.title});
+			firebase.database().ref("internships/students/"+uid1+"/notifications").update(sval);
 		});
+		firebase.database().ref("internships/internship/"+id).update(x).then(function(){
+			window.location.href="/sprofile";
+		});}
 	});
 }
-//------------------------------------------------------------------------------------------------------
 sort(){
    let st=this.state.internships;
    let sellen=this.state.selectedOption?this.state.selectedOption.length:0;
    for(var i=0;i<st.length;i++){
-    st[i].show=true;
+    st[i].show=false;
    }
-    for(var i=0;i<st.length;i++){
-      
-      for(var j=0;j<sellen;j++){
-        console.log("Skill set:", st[i].skillSet, this.state.selectedOption[j].label, st[i].skillSet.includes(this.state.selectedOption[j].label))
-   if(!st[i].skillSet.includes(this.state.selectedOption[j].label)){
-        console.log(st[i].skillSet)
-       st[i].show=false;
-    }
-  }
-}
-    
 
-console.log(st);
-  if(document.getElementById("Workfromhome").checked){
+  if(document.getElementById("Workfromhome").checked && document.getElementById("part-time").checked){
      for(var i=0;i<st.length;i++)
     {   
-      if(st[i].workCategory!="work-from-home"){
-      st[i].show=false;
+      if(st[i].workCategory=="work-from-home"){
+      st[i].show=true; }
+      if(st[i].workCategory=="part-time"){
+      st[i].show=true; }
+    }
+  }
+ else if(document.getElementById("Workfromhome").checked && document.getElementById("full-time").checked){
+     for(var i=0;i<st.length;i++)
+    {   
+      if(st[i].workCategory=="work-from-home"){
+      st[i].show=true; }
+      if(st[i].workCategory=="full-time"){
+      st[i].show=true; }
+    }
+  }
+ else if(document.getElementById("part-time").checked && document.getElementById("Workfromhome").checked){
+     for(var i=0;i<st.length;i++)
+    {   
+      if(st[i].workCategory=="part-time"){
+      st[i].show=true; }
+      if(st[i].workCategory=="work-from-home"){
+      st[i].show=true; }
+    }
+  }
+ else if(document.getElementById("full-time").checked && document.getElementById("part-time").checked){
+     for(var i=0;i<st.length;i++)
+    {   
+      if(st[i].workCategory=="full-time"){
+      st[i].show=true; }
+      if(st[i].workCategory=="part-time"){
+      st[i].show=true; }
+    }
+  }
+
+else if(document.getElementById("Workfromhome").checked){
+     for(var i=0;i<st.length;i++)
+    {   
+      if(st[i].workCategory=="work-from-home"){
+      st[i].show=true;
     }
   }
 }
-
 else if(document.getElementById("part-time").checked){
      for(var i=0;i<st.length;i++)
     {   
-      if(st[i].workCategory!="part-time"){
-      st[i].show=false;
+      if(st[i].workCategory=="part-time"){
+      st[i].show=true;
     }
   }
 }
 else if(document.getElementById("full-time").checked){
      for(var i=0;i<st.length;i++)
     {   
-      if(st[i].workCategory!="full-time"){
-      st[i].show=false;
+      if(st[i].workCategory=="full-time"){
+      st[i].show=true;
     }
   }
 }
 else{
-     for(var i=0;i<st.length;i++)
-    { st[i].show=true;
+	 for(var i=0;i<st.length;i++)
+    {   
+      
+      st[i].show=true;
+    
+  }
+}
+      for(var i=0;i<st.length;i++){      
+      for(var j=0;j<sellen;j++){
+   if(!st[i].skillSet.includes(this.state.selectedOption[j].label)){
+       st[i].show=false;
     }
   }
-  
-
+}
 this.setState({internships:st});
 }
 handleChange = selectedOption => {
     this.setState({ selectedOption });
 };
-
-//Added as part of Integration, do not replace-------------------------
 toggleNotifications(){
 	if(document.getElementById("notificationBox").style.display=="none"||document.getElementById("notificationBox").style.display==""){
 		document.getElementById("notificationBox").style.display="block";	}
 	else{		document.getElementById("notificationBox").style.display="none";	}
 }
-//------------------------------------
-
 render(){
   const { selectedOption } = this.state;
   return (    
     <div className="body">
 <div className="headera">
-        <h1 className="defaultClass">DSCE INTERNSHIP PORTAL</h1>
-		<button className="notificationButton" onClick={this.toggleNotifications}>Notifications</button>
-		<button className="loginButton">Sample Username</button>
+<img className="HeadLogoStudent" src="https://img.collegepravesh.com/2018/10/DSI-Bangalore-Logo.png"/>
+     <h4 className="defaultClass">Student Dashboard</h4>
 </div>
 
 
 
-<div className="notificationBox" id="notificationBox"><Notifications/></div>
+<div className="notificationBoxOuter"  id="notificationBox">
+<div className="notificationBoxInner"><Notifications/></div></div>
+
 
 
 
      {this.state.internships.map((item)=>{return(
       <div key={item.id}>
       {item.show?<div className="internshipa"> 
-            <h2>{item.title}</h2>
-            <b>{item.companyName}</b>
-            <p>Description:{item.description}</p><br/>
+            <h2 className="defaultClass">Title: {item.title}</h2>
+            <b>Company: {item.companyName}</b>
+            <p>Description:  {item.description}</p><br/>
             <table className="defaultClass">
               <tbody className="defaultClass">
                 <tr className="defaultClass">
@@ -196,44 +270,41 @@ render(){
                 </tr>
                 <tr className="defaultClass">
                 <td className="defaultClass">{item.startdt}</td>
-                <td className="defaultClass">{item.duration}</td>
-                <td className="defaultClass">{item.stipend}</td>
+                <td className="defaultClass">{item.duration} Month(s)</td>
+                <td className="defaultClass">Rs.{item.stipend} /Month</td>
                 <td className="defaultClass">{item.applicationdt}</td>
                 <td className="defaultClass">
                 {item.skillSet.map((x,i)=>{return(
                 <span key={i}> {x}</span>)})}</td></tr>
               </tbody>
             </table><br/>
-<input type="button" className="view" value="Apply" onClick={()=>{this.apply(item.id);}}/>
+			
+			<input type="button" className="view" value="Apply" onClick={()=>{this.apply(item.id);}}/>
 <br/><br/>
 </div>:""}</div>
  );})}      
+ <button className="notificationButton" onClick={this.toggleNotifications}>Notifications</button>
       <div className="filter">
      <div className="filterui">
      <h1 className="Head">Filters</h1>
      <hr></hr>
      <h3 className="defaultClass">Category</h3>
      <div className="options">
-	<Select options={this.state.options} onChange={this.handleChange} isMulti={true}/>
+	<Select options={this.state.options} onChange={this.handleChange} value={this.state.selectedOption} isMulti={true}/>
 <h3 className="defaultClass">Select your preferences</h3>
-  <h5 className="defaultClass"><input type="radio" className="radio" id="Workfromhome"  name="preference"/>Work From Home</h5>
-  <h5 className="defaultClass"><input type="radio" className="radio" id="part-time" name="preference"/>Part-Time</h5>
-  <h5 className="defaultClass"><input type="radio" className="radio" id="full-time" name="preference"/>Full-Time</h5>
-  
+  <h5 className="defaultClass"><input type="checkbox" className="radio" id="Workfromhome"  name="preference"/>Work From Home</h5>
+  <h5 className="defaultClass"><input type="checkbox" className="radio" id="part-time" name="preference"/>Part-Time</h5>
+  <h5 className="defaultClass"><input type="checkbox" className="radio" id="full-time" name="preference"/>Full-Time</h5>
+   <input type="button" className="view" value="Reset" onClick={this.reset}/>
   <input type="button" className="view" value="Submit" onClick={this.sort}/>
             </div>
          </div>
         </div>
-		
 		<button className="takeminitest" onClick={this.gotoMiniTest}>Start Test</button><br/>
       </div>
       
   );}
 }
-
-
-
-//Added as part of Integration, do not replace-------------------------
 class Notifications extends React.Component{
 	constructor(){
 		super();
@@ -244,11 +315,14 @@ class Notifications extends React.Component{
 	}
 	componentDidMount() {
 	let tmp=this.loaddata;
-	//let uid=firebase.auth().currentUser.uid;
-	let uid="u1"; //Remove after integration
+	setTimeout(()=>{
+		if(firebase.auth().currentUser){
+	let uid=firebase.auth().currentUser.uid;
 	firebase.database().ref("internships/students/"+uid+"/notifications").on("value",function(snapshot){
 		tmp(snapshot.val());
-	});
+		});}
+		else{window.location.href="/";}
+		},5000);
 	}
 	loaddata(snapshotval){
 		let data=snapshotval;
@@ -260,13 +334,12 @@ class Notifications extends React.Component{
 		<div>
 			{this.state.items.map((item) =>{
 				return(
-				<h4 key={this.state.items.indexOf(item)} className="notificationItem">{item.gotoLink?<a href={item.gotoLink}>{item.notifText}</a>:<span>{item.notifText}</span>}</h4>
+				<h4 key={this.state.items.indexOf(item)} className="notificationItem">{item.gotoLink?<a className="notifLink" href={item.gotoLink} target="_blank">{item.notifText}</a>:<span>{item.notifText}</span>}</h4>
 				);
 			})}	    
 		</div>
 		);
 	}
 }
-//----------------------------------
 
 export {App as StudentDashboard};

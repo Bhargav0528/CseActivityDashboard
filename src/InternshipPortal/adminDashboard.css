@@ -1,6 +1,13 @@
 @media only screen and (min-width:950px){
+*{
+		margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",   sans-serif !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
 a{	text-decoration:none;	}
 button:focus{	outline:none;	}
+input{	line-height:20px;}
 p.unauthorisedAccess{
 	font-size:25pt;
 	font-weight:bold;
@@ -14,7 +21,7 @@ span.unauthorisedAccess{
 }
 div.header{
 	padding:5px;
-	position:absolute;
+	position:relative;
 	top:0;
 	left:0;
 	right:0;
@@ -23,43 +30,23 @@ div.header{
 span.header{
 	display:inline;
 	font-weight:bold;
-	font-size:20pt;
+	font-size:18pt;
 	position:relative;
 	margin-left:10px;
-	top:-12px;
+	top:0;
 	color:white;
 }
 img.icon{
-	width:40px;
-	height:40px;
+	width:30px;
+	height:30px;
 	display:inline-block;
 	padding:2px;
 }
-button.login{
-	float:right;
-	display:inline;
-	padding:8px;
-	background-color:rgb(40,140,190);
-	border:none;
-	color:white;
-}
-button.login:hover{	background-color:rgb(0,80,140);}
 .sidebar{	display:none;	}
 div.actiondiv{
+	float:right;
 	margin:0;
 	padding:0;
-	border:none;
-}
-div.actionsdiv{
-	width:20%;
-	position:fixed;
-	right:0;
-	top:60px;
-	margin:5px 5px 0px 5px;
-	padding:8px;
-	border-radius:8px;
-	border:solid 1px gray;
-	text-align:center;
 }
 h3.actionsdiv{
 	padding:0px;
@@ -67,14 +54,14 @@ h3.actionsdiv{
 	display:block;
 }
 button.actionsdiv{
-	display:block;
-	padding:6px;
-	border-radius:16px;
 	border:none;
-	width:100%;
-	margin:5px 0px 5px 0px;
+	height:30px;
+	margin:0px 2px 0px 2px;
+	background:rgb(0,80,150);
+	color:white;
+	font-weight:bold;
 }
-button.actionsdiv:hover{	background-color:darkgray;	}
+button.actionsdiv:hover{	background-color:rgb(0,50,120);	}
 button.actionsdiv1{
 	display:block;
 	padding:6px;
@@ -84,39 +71,50 @@ button.actionsdiv1{
 	margin:5px 0px 5px 0px;
 }
 button.actionsdiv1:hover{	background-color:darkgray;	}
+.adminDashboardTab{
+	padding-left:0;
+	padding-right:0;
+	width:20%;
+}
 div.closedDiv{
 	padding:8px;
 	border-radius:8px;
 	border:solid 1px gray;
 	position:relative;
-	top:60px;
+	top:0px;
 	left:0px;
-	margin:5px 0px 0px 5px;
-	width:75%;
+	margin:5px;
+	width:99%;
 }
 div.ongoingDiv{
 	padding:8px;
 	border-radius:8px;
 	border:solid 1px gray;
 	position:relative;
-	top:60px;
+	top:0px;
 	left:0px;
-	margin:5px 0px 0px 5px;
-	width:75%;
+	margin:5px;
+	width:99%;
 }
-h3.closedDiv, h3.ongoingDiv{	margin:0px 0px 3px 0px; padding:0px;	}
+h3.closedDiv, h3.ongoingDiv{	
+	margin:0px 0px 3px 0px;
+	padding:0px;
+	font-size:22pt;
+	font-weight:600;
+	line-height:90%;
+	font-family:"Roboto","Helvetica Neue","Arial",sans-serif !important;	}
 div.formClass{
 	position:relative;
-	top:60px;
+	top:0px;
 	left:0px;
 	right:0;
 	margin:5px 0px 0px 5px;
 }
 div.questionForm{
-	margin:65px 5px 5px 5px;
+	margin:5px;
 	border-radius:8px;
 	padding:4px;
-	width:97%;
+	width:99%;
 	background-color:lightgray;
 }
 div.questionForm h4{	padding:0px; margin:4px;	}
@@ -134,15 +132,15 @@ input.minitestq{
 	padding:4px;
 }
 button.btn{
-	padding:8px;
+	padding:6px;
 	background-color:rgb(0,108,180);
 	color:white;
 	border:none;
 	border-radius:16px;
 	font-weight:bold;
-	margin:0px 0px 4px 8px;
+	margin:0px 0px 4px 4px;
 }
-button.btn:hover{	background-color:rgb(0,70,140);		}
+button.btn:hover{	background-color:rgb(0,70,140);	color:white;	}
 button.btn1{
 	padding:8px;
 	background-color:darkgreen;
@@ -161,7 +159,7 @@ div.questionFilled{
 	margin:5px 5px 5px 0px;
 	border-radius:8px;
 	padding:8px;
-	background-color:rgb(230,230,0);
+	background-color:lightgray;
 }
 div.questionFilled p{	padding:0px; margin:2px 0px 2px 0px;	}
 p.optionFilled1{
@@ -182,22 +180,52 @@ button.removebtn{
 button.removebtn:hover{color:red;}
 table.formClass{width:100%;margin:0px;padding:0px;}
 tr.formClass{width:100%;padding:0px;}
-th.formClass{width:20%;text-align:left;}
+th.formClass{
+	width:20%;
+	text-align:left; 
+	border:none;
+	font-size:12pt;
+}
 td.formClass{text-align:left;}
-td.formClass input{width:98%;padding:4px;}
+td.formClass input{
+	width:100%;
+	padding:4px;
+	border:1px solid lightgray;
+	line-height:20px;
+}
+input.formClass2{
+	padding:4px;
+	border:1px solid lightgray;
+}
 td.formClass input:invalid{border-color:red;}
 td.formClass textarea{
-	width:98%;
+	width:100%;
 	height:50px;
 	padding:4px;
 	margin:4px 0px 4px 0px;
 }
 td.formClass1 input{width:30%; text-align:left; margin-right:30px;}
 td.formClass1 select{width:auto; text-align:left;}
+button.formClass{
+	color:white;
+	background-color:rgb(0,108,180);
+	padding:8px 16px 8px 16px;
+	margin:4px;
+	border-radius:16px;
+	font-weight:bold;
+	border:none;
+}
+button.formClass:hover{	background-color:rgb(0,70,140);}
 div.internship{
 	padding:8px;
 	border-radius:8px;
-	background-color:lightgray;
+	background-color:#d4f3ff; 
+	margin:8px 0px 15px 0px;
+}
+div.unapprovedinternship{
+	padding:8px;
+	border-radius:8px;
+	background-color:#ffef9e;
 	margin:3px 0px 3px 0px;
 }
 h3.internship{
@@ -222,12 +250,15 @@ h3.internshipStatus{
 	margin:0px 10px 0px 0px;
 	padding:0px;
 	font-size:16pt;
+	line-height:20px;
+	
 }
 div.internshipStatus{
-	width:60%;
+	width:92%;
 	display:inline-block;
-	margin:0px 0px 0px 10px;
+	margin:0px 0px 0px 30px;
 	padding:0;
+	background-color:#efefef; 
 }
 button.internship{
 	background-color:rgb(0,108,180);
@@ -239,16 +270,16 @@ button.internship{
 	margin:0px 2px 4px 2px;
 	z-index:3;
 }
-button.internship:hover{	background-color:rgb(0,150,220);	}
+button.internship:hover{	background-color:rgb(0,70, 140);	}
 div.internship1{
 	padding:8px;
 	border-radius:8px;
 	border:solid 1px gray;
 	position:relative;
-	top:60px;
+	top:0px;
 	left:0px;
-	margin:5px 0px 0px 5px;
-	width:75%;
+	margin:5px;
+	width:99%;
 }
 button.internship1{
 	position:absolute;
@@ -294,13 +325,16 @@ input.linkcreate1{
 	margin:4px;
 }
 span.internship{	margin:0px 30px 0px 0px; padding:0px; width:30%;}
-table.internship1{	width:100%;}
+table.internship1{		
+	width:100%; 
+}
 div.questions{
 	position:relative;
 	margin-top:70px;
 }
-div.notification{
-	width:80%;
+
+div.notificationAdmin{
+	width:95%;
 	padding:12px;
 	border:1px solid black;
 	border-radius:8px;
@@ -309,7 +343,7 @@ div.notification{
 	top:0;
 	left:0;
 }
-button.notification{
+button.notificationAdmin{
 	position:absolute;
 	top:4px;
 	right:4px;
@@ -319,19 +353,21 @@ button.notification{
 	border:none;
 	font-size:18pt;
 }
-button.notification:hover{	color:red;}
-h3.notification{
+button.notificationAdmin:hover{	color:red;}
+h3.notificationAdmin{
 	display:block;
 	margin:4px;
 	padding:0;
+	font-size:18pt;
 }
-input.notification{
+input.notificationAdmin{
 	width:98%;
 	margin:0px 0px 16px 0px;
 	padding:8px;
 	border-radius:8px;
-	border:1px solid darkgray;
+	border:1px solid darkgray;	
 }
+input.notificationAdmin:invalid{ border:1px solid red; }
 span.statusText{
 	background-color:green;
 	color:white;
@@ -365,24 +401,50 @@ span.internship1Scores{
 	display:none;
 }
 table.internship1StudentApplied{
-	margin:0;
+	margin:0px 0px 5px 0px;
 	padding:0;
 	border:1px solid black;
 	border-collapse: collapse;
 	width:100%;
 }
 tr.internship1StudentApplied{
-	margin:2px 0px 2px 0px;
+	margin:0px;
 	padding:0;
 	border:1px solid black;
 }
+tr.internship1StudentNS{
+	margin:0px;
+	padding:0;
+	border:1px solid black;
+	background-color:darkgray;
+}
 tr.internship1StudentApplied td,th{
-	margin:0;
-	padding:4px;
+	margin:0px;
+	padding:0px;
 	border:1px solid black;
 	text-align:center;
 }
-a.internship1StudentApplied{ color:rgb(0,108,180);}
+tr.internship1StudentNS td{
+	margin:0px;
+	padding:0px;
+	border:1px solid black;
+	text-align:center;
+	text-decoration:line-through;
+}
+tr.internship3StudentApplied{
+	margin:0;
+	padding:0;
+	border:1px solid black;
+	background-color:#e4ffd9;
+}
+tr.internship3StudentApplied td{
+	margin:0px;
+	padding:0px;
+	border:1px solid black;
+	text-align:center;
+}
+a.internship1StudentApplied{  color:rgb(0,108,180); margin:0;}
+a.internship2StudentApplied{ margin:0px 0px 0px 10px;}
 div.popupMinitestNotif{
 	display:none;
 	background-color:white;
@@ -400,14 +462,14 @@ button.popupMinitestNotif{
 	margin:2px;
 }
 input.popupMinitestNotif{
-	width:40%;
+	width:70%;
 }
 input.internshipMiniTest{
 	width:100px;
 	margin:4px;
 }
 button.internshipMiniTest{
-	padding:8px;
+	padding:6px;
 	background-color:rgb(0,108,180);
 	color:white;
 	border:none;
@@ -415,10 +477,271 @@ button.internshipMiniTest{
 	font-weight:bold;
 	margin:2px;
 }
+button.internshipMiniTest1{
+	padding:6px;
+	background-color:darkgreen;
+	color:white;
+	border:none;
+	border-radius:16px;
+	font-weight:bold;
+	margin:2px;
+}
+button.internshipMiniTest1:hover{ background-color:green; }
 button.internshipMiniTest:hover{
 	background-color:rgb(0,70,140);	
 }
+@keyframes loading{
+	from{ transform:rotate(0deg);}
+	to{ transform:rotate(360deg);}
 }
+img.loadicon{
+	animation-timing-function: linear;
+	animation-name:loading;
+	animation-duration:0.5s;
+	animation-delay:0s;
+	animation-iteration-count: 10;
+	display:none;
+}
+img.loadingicon{
+	animation-timing-function: linear;
+	animation-name:loading;
+	animation-duration:0.5s;
+	animation-delay:0s;
+	animation-iteration-count: infinite;
+	width:100px;
+	height:100px;
+	margin:100px;
+}
+textarea.remarks{
+	width:98%;
+	padding:4px;
+	border:1px solid lightgray;
+	border-radius:4px;
+	height:100px;
+}
+button.remarks{
+	margin:4px;
+}
+button.internshipIconbtn{
+	padding:4px;
+	background-color:rgb(0,108,180);
+	color:white;
+	border:none;
+	border-radius:16px;
+	font-weight:bold;
+	margin:0px 0px 4px 8px;
+}
+button.internshipIconbtn:hover{background-color:rgb(0,70,140);}
+img.internshipIcon{
+	width:25px;
+	height:25px;
+	padding:0;
+	margin:0;
+}
+table.internshipStatus{
+	border:none;
+	padding:0;
+	width:100%;
+	margin:0px 0px 10px 0px;
+}
+td.internshipStatus{
+	margin:0;
+	padding:0;
+	width:20%;
+	text-align:left;
+}
+td.internshipStatus span{
+	margin:0;
+	padding:2px 4px 2px 4px;
+	background-color:white;
+	border-radius:4px;
+	cursor:default;
+}
+button.shortlistButton{
+	padding:6px;
+	background-color:lightgray;
+	color:black;
+	border:none;
+	border-radius:4px;
+	font-weight:bold;
+	font-size:14pt;
+	margin:0px;
+}
+button.shortlistButton:hover{
+	background-color:gray;	
+	color:white;
+}
+div.feedbackInternship{
+	padding:5px;
+	width:100%;
+	margin:0px 0px 0px 0px;
+	border:none;
+	border-top:1px solid rgb(0,108,180);
+	border-bottom:1px solid rgb(0,108,180);
+}
+div.internshipFeedbackDisp{
+	margin:10px 0px 10px 0px;
+	padding:0px;
+}
+table.internship1StudentMembers{
+	margin:0px;
+	border:1px solid black;
+	border-collapse: collapse;
+	width:100%;
+}
+span.timeRemainingMiniTest{
+	position:fixed;
+	top:80px;
+	right:10px;
+	z-index:10;
+	padding:5px;
+	background-color:rgb(0,108,180);
+	color:white;
+	font-weight:bold;
+	font-size:12pt;
+}
+#companyDescAdminDashboard{
+	display:none;
+	width:100%;
+}
+#companyDescBtnAdminDashboard{
+	padding:0;
+	margin:0;
+	background:transparent;
+	color:rgb(0,108,180);
+	border:none;
+}
+#companyDescBtnAdminDashboard:hover{
+	padding:0;
+	margin:0;
+	background:transparent;
+	color:darkblue;
+	font-weight:bold;
+}
+#internshipDescAdminDashboard{
+	display:none;
+	width:100%;
+}
+#internshipDescBtnAdminDashboard{
+	padding:0;
+	margin:0;
+	background:transparent;
+	color:rgb(0,108,180);
+	border:none;
+}
+#internshipDescBtnAdminDashboard:hover{
+	padding:0;
+	margin:0;
+	background:transparent;
+	color:darkblue;
+	font-weight:bold;
+}
+#skillsListAdminDashboard{
+	display:none;
+	width:100%;
+}
+#skillsListBtnAdminDashboard{
+	padding:0;
+	margin:0;
+	background:transparent;
+	color:rgb(0,108,180);
+	border:none;
+}
+#skillsListBtnAdminDashboard:hover{
+	padding:0;
+	margin:0;
+	background:transparent;
+	color:darkblue;
+	font-weight:bold;
+}
+#internshipOtherDetailsAdminDashboard{
+	display:none;
+	width:100%;
+}
+#internshipOtherDetailsBtnAdminDashboard{
+	padding:0;
+	margin:0;
+	background:transparent;
+	color:rgb(0,108,180);
+	border:none;
+}
+#internshipOtherDetailsBtnAdminDashboard:hover{
+	padding:0;
+	margin:0;
+	background:transparent;
+	color:darkblue;
+	font-weight:bold;
+}
+#internsfeedbackAdminDashboard{
+	display:none;
+	width:100%;
+}
+#internsfeedbackBtnAdminDashboard{
+	padding:0;
+	margin:0;
+	background:transparent;
+	color:rgb(0,108,180);
+	border:none;
+}
+#internsfeedbackBtnAdminDashboard:hover{
+	padding:0;
+	margin:0;
+	background:transparent;
+	color:darkblue;
+	font-weight:bold;
+}
+table.studentFeedbackInternship{
+	width:98%;
+	margin:5px;
+	border-collapse:collapse;
+}
+td.studentFeedbackInternship{
+	width:70%;
+	border:none;
+}
+th.studentFeedbackInternship{
+	width:30%;
+	border:none;
+}
+textarea.studentFeedbackInternship{
+	width:100%;
+	height:60px;
+}
+div.searchskill{
+	border:1px solid black;
+	padding:8px;
+}
+div.searchskill h4{
+	display:inline-block;
+	padding:0;
+	margin:0;
+	font-size:14pt;
+	font-weight:bold;
+}
+tr.searchskill1{
+	background-color:lightgray;
+	margin-top:4px;	
+}
+tr.searchskill{
+	background-color:lightblue;
+	margin-top:4px;
+}
+span.blockTitleFont{
+	font-size:14pt;
+	display:block;
+	font-weight:bold;
+	padding:0px;
+	margin:0px 0px 5px 0px;
+}
+}
+
+
+
+
+
+
+
+
 
 
 
@@ -426,7 +749,14 @@ button.internshipMiniTest:hover{
 
 
 @media only screen and (max-width:950px){
+*{
+	margin: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
 a{	text-decoration:none;}
+button:focus{	outline:none;	}
+input{	line-height:20px;}
 p.unauthorisedAccess{
 	font-size:25pt;
 	font-weight:bold;
@@ -440,7 +770,7 @@ span.unauthorisedAccess{
 }
 div.header{
 	padding:4px;
-	position:absolute;
+	position:relative;
 	top:0;
 	left:0;
 	right:0;
@@ -457,18 +787,6 @@ span.header{
 }
 img.icon{ 
 	display:none; 
-}
-button.login{
-	float:right;
-	display:inline;
-	padding:3px;
-	border-radius: 4px;
-	background-color:rgb(40,140,190);
-	border:none;
-	color:white;
-}
-button.login:hover{
-	background-color:rgb(0,80,140);
 }
 button.sidebar{
 	display:inline;
@@ -516,15 +834,13 @@ button.sidebarclose{
 }
 div.actiondiv{
 	display:none;
-
 }
 div.actionsdiv{
-	padding:0px;
-	margin-top:40px;
+	padding:10px;
+	margin-top:80px;
 	border:none;
 	text-align:center;
 	width:auto;
-	position:static;
 }
 h3.actionsdiv{
 	display:none;
@@ -532,26 +848,28 @@ h3.actionsdiv{
 button.actionsdiv{
 	padding:6px;
 	border-radius:8px;
-	width:100%;
+	width:95%;
 	margin:2px 0px 2px 0px;
 	font-size:12pt;
 }
-button.actionsdiv:hover{
-	background-color:darkgray;
+button.actionsdiv:hover{	background-color:darkgray; }
+button.actionsdiv1{ display:none; }
+div.mainPageInternshipPortal{ width:100%; }
+.adminDashboardTab{
+	padding:0 !important;
+	width:25%;
+	margin:0;
 }
-button.actionsdiv1{
-display:none;}
 div.closedDiv{
 	padding:3px;
 	border-radius:8px;
 	border:solid 1px gray;
-	max-height:350px;
 	overflow:scroll;
 	position:relative;
-	top:30px;
+	top:0px;
 	left:0px;
 	margin:5px 0px 0px 5px;
-	width:95%;
+	width:100%;
 }
 div.ongoingDiv{
 	padding:3px;
@@ -560,14 +878,17 @@ div.ongoingDiv{
 	position:relative;
 	left:0px;
 	top:30px;
-	max-height:350px;
+	max-height:300px;
 	overflow:scroll;
 	margin:5px 0px 0px 5px;
-	width:95%;
+	width:100%;
 }
 h3.closedDiv, h3.ongoingDiv{
 	margin:0px;
 	padding:0px;
+	font-size:18pt;
+	line-height:90%;
+	font-family:"Roboto","Helvetica Neue","Arial",sans-serif !important;
 }
 div.questionForm{
 	margin:65px 5px 5px 5px;
@@ -585,16 +906,6 @@ div.formClass{
 	right:0;
 	margin:3px 0px 0px 3px;
 }
-div.internship1{
-	padding:4px;
-	position:relative;
-	top:35px;
-	left:0;
-}
-button.internship1{position:absolute; top:3px; right:3px;}
-h3.internship1{margin:0px 25px 0px 0px; padding:0;}
-h4.internship1{margin:0;padding:0;}
-p.internship1{padding:0; margin:0;}
 input.minitestq{
 	position:relative;
 	width:98%;
@@ -616,7 +927,7 @@ button.btn{
 	font-weight:bold;
 	margin:0px 0px 4px 8px;
 }
-button.btn:hover{	background-color:rgb(0,70,140);		}
+button.btn:hover{	background-color:rgb(0,70,140);	color:white;	}
 button.btn1{
 	padding:8px;
 	background-color:darkgreen;
@@ -635,7 +946,7 @@ div.questionFilled{
 	margin:5px 5px 5px 0px;
 	border-radius:8px;
 	padding:8px;
-	background-color:rgb(230,230,0);
+	background-color:lightgray;
 }
 div.questionFilled p{	padding:0px; margin:2px 0px 2px 0px;	}
 p.optionFilled1{
@@ -656,22 +967,40 @@ button.removebtn{
 button.removebtn:hover{color:red;}
 table.formClass{width:100%;margin:0px;padding:0px;}
 tr.formClass{width:100%;padding:0px;}
-th.formClass{width:20%;text-align:left;}
+th.formClass{width:20%;text-align:left; border:none;}
 td.formClass{text-align:left;}
-td.formClass input{width:98%;padding:4px;}
+td.formClass input{width:98%;padding:4px; border:1px solid lightgray;}
+td.formClass input[type=time]{width:50%;padding:4px; border:1px solid lightgray;}
 td.formClass input:invalid{border-color:red;}
 td.formClass textarea{
 	width:98%;
 	height:50px;
 	padding:4px;
 	margin:4px 0px 4px 0px;
+	border:1px solid lightgray;
 }
-td.formClass1 input{width:30%; text-align:left; margin-right:30px;}
-td.formClass1 select{width:auto; text-align:left;}
+td.formClass1 input[type=number]{width:30%; text-align:left; margin-right:30px;border:1px solid lightgray;}
+td.formClass1 select{width:auto; text-align:left;border:1px solid lightgray;}
+button.formClass{
+	color:white;
+	background-color:rgb(0,108,180);
+	padding:8px 16px 8px 16px;
+	margin:4px;
+	border-radius:16px;
+	font-weight:bold;
+	border:none;
+}
+button.formClass:hover{	background-color:rgb(0,70,140);}
 div.internship{
 	padding:8px;
 	border-radius:8px;
-	background-color:lightgray;
+	background-color:#ededef;
+	margin:6px 0px 6px 0px;
+}
+div.unapprovedinternship{
+	padding:8px;
+	border-radius:8px;
+	background-color:#ffef9e;
 	margin:3px 0px 3px 0px;
 }
 h3.internship{
@@ -698,9 +1027,9 @@ h3.internshipStatus{
 	font-size:16pt;
 }
 div.internshipStatus{
-	width:60%;
+	width:90%;
 	display:inline-block;
-	margin:0px 0px 0px 10px;
+	margin:0px 0px 0px 25px;
 	padding:0;
 }
 button.internship{
@@ -714,11 +1043,31 @@ button.internship{
 	z-index:3;
 }
 button.internship:hover{	background-color:rgb(0,150,220);	}
-h3.internship1{padding:0px; margin:0px 30px 0px 0px;}
-h4.internship1{padding:0px; margin:0px;}
-p.internship1{padding:4px; margin:0px;}
+div.internship1{
+	padding:4px;
+	position:relative;
+	top:0px;
+	left:0;
+}
+button.internship1{
+	position:absolute;
+	top:3px;
+	right:3px;
+	float:right;
+	background:lightgray;
+	border-radius:16px;
+	padding:10px;
+	color:gray;
+	border:none;
+	font-size:20pt;
+}
+button.internship1:hover{color:red;}
+h3.internship1{margin:0px 30px 0px 0px; padding:0;}
+h4.internship1{margin:0;padding:0;}
+p.internship1{padding:0; margin:0;}
+pre.internship1{overflow-x:scroll; padding:0; margin:0;}
 b.internship1{padding:4px; margin:0px;}
-ul.internship1{margin-top:0px; margin-bottom:0px;}
+ul.internship1{margin:0;}
 div.linkcreate{
 	position:relative;
 	top:60px;
@@ -746,11 +1095,56 @@ input.linkcreate1{
 	margin:4px;
 }
 span.internship{	margin:0px 30px 0px 0px; padding:0px; width:30%;}
-table.internship1{	width:100%;}
+table.internship1{	
+	width:100%; 
+	border-collapse:collapse;
+}
+table.internship1 td,th{	
+	padding:0;
+	margin:0;
+	border:1px solid black;
+}
 div.questions{
 	position:relative;
 	margin-top:70px;
 }
+div.notificationAdmin{
+	width:95%;
+	padding:12px;
+	border:1px solid black;
+	border-radius:8px;
+	margin:20px;
+	position:relative;
+	top:0;
+	left:0;
+}
+button.notificationAdmin{
+	position:absolute;
+	top:4px;
+	right:4px;
+	float:right;
+	background:transparent;
+	padding:8px;
+	border:none;
+	font-size:18pt;
+}
+button.notificationAdmin:hover{	color:red;}
+h3.notificationAdmin{
+	display:block;
+	margin:4px;
+	padding:0;
+	font-size:18pt;
+}
+input.notificationAdmin{
+	width:98%;
+	margin:0px 0px 16px 0px;
+	padding:8px;
+	border-radius:8px;
+	border:1px solid darkgray;	
+}
+input.notificationAdmin:invalid{ border:1px solid red; }
+
+
 div.notification{
 	width:80%;
 	padding:12px;
@@ -784,6 +1178,9 @@ input.notification{
 	border-radius:8px;
 	border:1px solid darkgray;
 }
+
+
+
 span.statusText{
 	background-color:green;
 	color:white;
@@ -824,116 +1221,329 @@ table.internship1StudentApplied{
 	width:100%;
 }
 tr.internship1StudentApplied{
-	margin:2px 0px 2px 0px;
+	margin:0px;
 	padding:0;
 	border:1px solid black;
 }
+tr.internship1StudentNS{
+	margin:0px;
+	padding:0;
+	border:1px solid black;
+	background-color:darkgray;
+}
 tr.internship1StudentApplied td,th{
-	margin:0;
-	padding:4px;
+	margin:0px;
+	padding:0px;
 	border:1px solid black;
 	text-align:center;
 }
-a.internship1StudentApplied{ color:rgb(0,108,180);}
+tr.internship1StudentNS td{
+	margin:0px;
+	padding:0px;
+	border:1px solid black;
+	text-align:center;
+	text-decoration:line-through;
+}
+tr.internship3StudentApplied{
+	margin:0;
+	padding:0;
+	border:1px solid black;
+	background-color:#e4ffd9;
+}
+tr.internship3StudentApplied td{
+	margin:0px;
+	padding:0px;
+	border:1px solid black;
+	text-align:center;
+}
+a.internship1StudentApplied{  color:rgb(0,108,180); margin:0;}
+a.internship2StudentApplied{ margin:0px 0px 0px 10px;}
 div.popupMinitestNotif{
 	display:none;
 	background-color:white;
 	z-index:10;
-	width:75%;
-	height:600px;
+	width:100%;
 }
-}
-
-
-
-
-
-
-
-
-@media only screen and (max-width: 350px){
-a{
-	text-decoration:none;
-}
-div.header{
-	padding:4px;
-	position:absolute;
-	top:0;
-	left:0;
-	right:0;
-	background-color:rgb(0,108,180);
-}
-span.header{
-	display:inline;
-	font-weight:bold;
-	font-size:10pt;
-	position:relative;
-	margin-left:5px;
-	top:0px;
-	color:white;
-}
-img.icon{ 
-	display:none; 
-}
-button.login{
+button.popupMinitestNotif{
 	float:right;
-	display:inline;
-	padding:3px;
-	border-radius: 4px;
-}
-button.sidebar{
-	display:inline;
-	position:relative;
-	top:0;
-	left:0;
-	height:20px;
-	width:20px;
-	padding:3px;
-	margin:0px;
-}
-div.actionsdiv{
-	padding:0px;
-	margin-top:40px;
+	padding:8px;
+	background-color:rgb(0,108,180);
+	color:white;
 	border:none;
-	text-align:center;
-	width:auto;
-	position:static;
+	border-radius:16px;
+	font-weight:bold;
+	margin:2px;
 }
-h3.actionsdiv{
+input.popupMinitestNotif{
+	width:40%;
+}
+input.internshipMiniTest{
+	width:100px;
+	margin:4px;
+}
+button.internshipMiniTest{
+	padding:6px;
+	background-color:rgb(0,108,180);
+	color:white;
+	border:none;
+	border-radius:16px;
+	font-weight:bold;
+	margin:2px;
+}
+button.internshipMiniTest:hover{
+	background-color:rgb(0,70,140);	
+}
+@keyframes loading{
+	from{ transform:rotate(0deg);}
+	to{ transform:rotate(360deg);}
+}
+img.loadicon{
+	animation-timing-function: linear;
+	animation-name:loading;
+	animation-duration:0.5s;
+	animation-delay:0s;
+	animation-iteration-count: 10;
 	display:none;
 }
-button.actionsdiv{
-	padding:6px;
-	border-radius:8px;
+img.loadingicon{
+	animation-timing-function: linear;
+	animation-name:loading;
+	animation-duration:0.5s;
+	animation-delay:0s;
+	animation-iteration-count: infinite;
+	width:100px;
+	height:100px;
+	margin:100px;
+}
+textarea.remarks{
+	width:98%;
+	padding:4px;
+	border:1px solid lightgray;
+	border-radius:4px;
+	height:100px;
+}
+button.remarks{
+	margin:4px;
+}
+button.internshipIconbtn{
+	padding:4px;
+	background-color:rgb(0,108,180);
+	color:white;
+	border:none;
+	border-radius:16px;
+	font-weight:bold;
+	margin:0px 0px 4px 8px;
+}
+button.internshipIconbtn:hover{background-color:rgb(0,70,140);}
+img.internshipIcon{
+	width:30px;
+	height:30px;
+	padding:0;
+	margin:0;
+}
+table.internshipStatus{
+	border:none;
+	padding:0;
 	width:100%;
-	margin:2px 0px 2px 0px;
-	font-size:12pt;
+	margin:0px 0px 10px 0px;
 }
-button.actionsdiv:hover{
-	background-color:darkgray;
+td.internshipStatus{
+	margin:0;
+	padding:0;
+	width:20%;
+	text-align:left;
 }
-div.closedDiv{
-	padding:3px;
-	border-radius:8px;
-	border:solid 1px gray;
-	position:relative;
-	top:60px;
-	left:0px;
-	margin:5px 0px 0px 5px;
-	width:95%;
+td.internshipStatus span{
+	margin:0;
+	padding:2px 4px 2px 4px;
+	background-color:white;
+	border-radius:4px;
+	cursor:default;
 }
-div.ongoingDiv{
-	padding:3px;
-	border-radius:8px;
-	border:solid 1px gray;
-	position:relative;
-	top:60px;
-	left:0px;
-	margin:5px 0px 0px 5px;
-	width:95%;
-}
-h3.closedDiv, h3.ongoingDiv{
+button.shortlistButton{
+	padding:6px;
+	background-color:lightgray;
+	color:black;
+	border:none;
+	border-radius:4px;
+	font-weight:bold;
+	font-size:14pt;
 	margin:0px;
+}
+button.shortlistButton:hover{
+	background-color:gray;	
+	color:white;
+}
+div.feedbackInternship{
+	padding:10px;
+	width:100%;
+	margin:5px 0px 0px 0px;
+	border:1px solid gray;
+	border-radius:8px;
+}
+div.internshipFeedbackDisp{
+	margin:10px 0px 10px 0px;
 	padding:0px;
 }
+table.internship1StudentMembers{
+	margin:10px 0px 40px 0px;
+	border:1px solid black;
+	border-collapse: collapse;
+	width:100%;
 }
+span.timeRemainingMiniTest{
+	position:fixed;
+	top:80px;
+	right:10px;
+	z-index:10;
+	padding:5px;
+	background-color:rgb(0,108,180);
+	color:white;
+	font-weight:bold;
+	font-size:12pt;
+}
+#companyDescAdminDashboard{
+	display:none;
+	width:100%;
+}
+#companyDescBtnAdminDashboard{
+	padding:0;
+	margin:0;
+	background:transparent;
+	color:rgb(0,108,180);
+	border:none;
+}
+#companyDescBtnAdminDashboard:hover{
+	padding:0;
+	margin:0;
+	background:transparent;
+	color:darkblue;
+	font-weight:bold;
+}
+#internshipDescAdminDashboard{
+	display:none;
+	width:100%;
+}
+#internshipDescBtnAdminDashboard{
+	padding:0;
+	margin:0;
+	background:transparent;
+	color:rgb(0,108,180);
+	border:none;
+}
+#internshipDescBtnAdminDashboard:hover{
+	padding:0;
+	margin:0;
+	background:transparent;
+	color:darkblue;
+	font-weight:bold;
+}
+#skillsListAdminDashboard{
+	display:none;
+	width:100%;
+}
+#skillsListBtnAdminDashboard{
+	padding:0;
+	margin:0;
+	background:transparent;
+	color:rgb(0,108,180);
+	border:none;
+}
+#skillsListBtnAdminDashboard:hover{
+	padding:0;
+	margin:0;
+	background:transparent;
+	color:darkblue;
+	font-weight:bold;
+}
+#internshipOtherDetailsAdminDashboard{
+	display:none;
+	width:100%;
+}
+#internshipOtherDetailsBtnAdminDashboard{
+	padding:0;
+	margin:0;
+	background:transparent;
+	color:rgb(0,108,180);
+	border:none;
+}
+#internshipOtherDetailsBtnAdminDashboard:hover{
+	padding:0;
+	margin:0;
+	background:transparent;
+	color:darkblue;
+	font-weight:bold;
+}
+#internsfeedbackAdminDashboard{
+	display:none;
+	width:100%;
+}
+#internsfeedbackBtnAdminDashboard{
+	padding:0;
+	margin:0;
+	background:transparent;
+	color:rgb(0,108,180);
+	border:none;
+}
+#internsfeedbackBtnAdminDashboard:hover{
+	padding:0;
+	margin:0;
+	background:transparent;
+	color:darkblue;
+	font-weight:bold;
+}
+table.studentFeedbackInternship{
+	width:98%;
+	margin:5px;
+	border-collapse:collapse;
+}
+td.studentFeedbackInternship{
+	width:70%;
+	border:none;
+}
+th.studentFeedbackInternship{
+	width:30%;
+	border:none;
+}
+textarea.studentFeedbackInternship{
+	width:100%;
+	height:60px;
+}
+div.searchskill{
+	border:1px solid black;
+	padding:8px;
+}
+div.searchskill h4{
+	display:inline-block;
+	padding:0;
+	margin:0;
+	font-size:14pt;
+	font-weight:bold;
+}
+tr.searchskill1{
+	background-color:lightgray;
+	margin-top:4px;	
+}
+tr.searchskill{
+	background-color:lightblue;
+	margin-top:4px;
+}
+button.internshipMiniTest1{
+	padding:6px;
+	background-color:darkgreen;
+	color:white;
+	border:none;
+	border-radius:16px;
+	font-weight:bold;
+	margin:2px;
+}
+button.internshipMiniTest1:hover{ background-color:green; }
+span.blockTitleFont{
+	font-size:14pt;
+	display:block;
+	font-weight:bold;
+	padding:0px;
+	margin:0px 0px 5px 0px;
+}
+}
+

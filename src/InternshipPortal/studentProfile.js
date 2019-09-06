@@ -1,11 +1,49 @@
 import React, { Component } from 'react';
 import './studentProfile.css';
-import firebase from '../config/firebaseConfig';
+import firebase from '../config/firebaseConfig.js';
 
 class App extends Component {
   constructor(){
     super();
+	this.state={
+		CGPA:"",
+		currentAddress:"",
+		doingInternship:false,
+		email:"",
+		fullName:"",
+		onlineCourses:"",
+		permanentAddress:"",
+		phone:"",
+		projects:"",
+		resume:"",
+		sec:"",
+		sem:"",
+		skills:[],
+		usn:""
+	};
     this.resume=this.resume.bind(this);
+	this.loadData=this.loadData.bind(this);
+	this.changedState=this.changedState.bind(this);
+  }
+  	changedState(e){
+	  this.setState({
+		[e.target.name]: e.target.value
+	});	
+	}	
+  componentDidMount(){
+	  setTimeout(()=>{
+	let uid1=firebase.auth().currentUser.uid;
+	//let uid1="u1"; //Remove after integration
+	let loadfunc=this.loadData;
+	this.setState({uid:uid1});
+	firebase.database().ref("internships/students/"+uid1).once("value").then(function(snapshot){
+		let sval=snapshot.val();
+		loadfunc(sval);
+	  });},5000);
+  }
+  loadData(sval){
+	  console.log(sval);
+	  this.setState(sval);
   }
 resume()
 {
@@ -42,30 +80,41 @@ resume()
     var alpha=/^[1-4][a-zA-Z][a-zA-Z][0-9][0-9][a-zA-Z][a-zA-Z][0-9][0-9][0-9]$/
     if(!r.match(alpha)){ alert("Invalid USN "); }
     else{
+		let sk=document.getElementById("20").value;
+		if(sk.trim()==""){sk=[];}
+		else{
+		sk=sk.split(",");
+		for(var t in sk){
+			sk[t]=sk[t].trim();
+		}}
 	var key2=firebase.database().ref('internships/students').push().key;
 	var item={
-      usn:r,
-      doingInternship:x,
+		CGPA:this.state.CGPA,
+		email:this.state.email,
       phone:document.getElementById("phone").value,
-      permanent:document.getElementById("21").value,
-      preferences:{
-        courses:document.getElementById("8").value,
+      permanentAddress:document.getElementById("21").value,
+	  courses:document.getElementById("8").value,
+      preferences:{        
         language:document.getElementById("7").value,
         workfrom:a,
         workhours:h,
       },
       projects:document.getElementById("pro").value,
-      resume:"resumes/s1/resume.pd",
-      skills:document.getElementById("20").value
+      skills:sk
     };
+	if(document.getElementById("image-file").files[0]){ item.resume="resumes/"+this.state.uid+"/resume.pdf";}
 	console.log(item);
-	firebase.database().ref('internships/students/'+key2).update(item);
-	var storageRef=firebase.storage().ref("resumes");
-	var resumeRef=storageRef.child(r+".pdf");
+	firebase.database().ref('internships/students/'+this.state.uid).update(item);
+	if(document.getElementById("image-file").files[0]){
+	var storageRef=firebase.storage().ref("resumes/"+this.state.uid);
+	var resumeRef=storageRef.child("resume.pdf");
 	var file=document.getElementById("image-file").files[0];
 	resumeRef.put(file).then(function(){ 
-    console.log("uploaded");});
-    window.location.href="details";
+    console.log("uploaded");
+	window.location.href="/submitted";
+	});
+	}
+	else{ window.location.href="submitted";}
 	}
 }
 render() {
@@ -75,23 +124,25 @@ render() {
 	<center> <h1>Preferences</h1></center>
 	</div>
 	<form action="">
+	<table  className="studentProfileDefault">
 	<ol>
-	<li className="studentProfileDefault"><label>Enter your usn:</label>   <input className="studentProfileDefault" type="text" id="usn"/></li><br/>
-	<li className="studentProfileDefault"><label>Current CGPA:</label>   <input className="studentProfileDefault" type="text" id="cgpa"/></li><br/>
-	<li className="studentProfileDefault"><label>Pursuing any internship </label><input type="radio" id="1" name="yes" value="yes"/>Yes<input type="radio" id="2" name="yes" value="no"/>No</li><br/>
-	<li className="studentProfileDefault"><label>Prefer to work from: </label>     <input type="radio" id="5" name="from" value="office"/>Office <input type="radio" id="6" name="from" value="home" />Home</li><br/>
-	<li className="studentProfileDefault"><label>Working hours prefered:</label>     <input type="radio" id="9" name="work" value="0-5"/>0-4 hrs
+	<li className="studentProfileDefault"><tr className="studentProfileDefault"><label>Enter your usn:</label> </tr>   <td className="studentProfileDefault"> <input className="studentProfileDefault" type="text" id="usn" name="usn" value={this.state.usn} onChange={this.changedState}/></td></li><br/>
+	<li className="studentProfileDefault"><tr className="studentProfileDefault"><label>Current CGPA:</label> </tr>     <td className="studentProfileDefault"> <input className="studentProfileDefault" type="text" id="cgpa" name="CGPA" value={this.state.CGPA} onChange={this.changedState}/></td></li><br/>
+	<li className="studentProfileDefault"><tr className="studentProfileDefault"><label>Pursuing any internship </label></tr> <td className="studentProfileDefault"> <input type="radio" id="1" name="yes" value="yes"/>Yes<input type="radio" id="2" name="yes" value="no"/>No</td></li><br/>
+	<li className="studentProfileDefault"><tr className="studentProfileDefault"><label>Prefer to work from: </label>  </tr>  <td className="studentProfileDefault"> <input type="radio" id="5" name="from" value="office"/>Office <input type="radio" id="6" name="from" value="home" />Home</td></li><br/>
+	<li className="studentProfileDefault"><tr className="studentProfileDefault"><label>Working hours prefered:</label></tr> <td className="studentProfileDefault">  <input type="radio" id="9" name="work" value="0-5"/>0-4 hrs
                                      <input type="radio" id="10" name="work" value="0-7"/>0-6 hrs
-                                     <input type="radio" id="11" name="work" value="0-8"/>0-8 hrs
+                                    <input type="radio" id="11" name="work" value="0-8"/>0-8 hrs</td>
                                      </li><br/>
-	<li className="studentProfileDefault"><label>Known languages: </label>  <textarea className="studentProfileDefault" id="7" rows="2" cols="10"></textarea> </li><br/><br/><br/><br/>
-	<li className="studentProfileDefault"><label>Mention if any online courses done: </label>       <textarea className="studentProfileDefault" id="8" rows="3" cols="20"></textarea></li><br/><br/><br/><br/>
-	<li className="studentProfileDefault"><label>Mention if any projects done: </label>       <textarea className="studentProfileDefault" id="pro" rows="3" cols="20"></textarea></li><br/><br/><br/><br/>
-	<li className="studentProfileDefault"><label>Skills: </label>       <textarea className="studentProfileDefault" id="20" rows="3" cols="20"></textarea></li><br/><br/><br/><br/>
-	<li className="studentProfileDefault"><label>Email-ID:</label>     <input className="studentProfileDefault" type="text" id="12"/></li><br/>
-	<li className="studentProfileDefault"><label>Phone-no:</label>     <input className="studentProfileDefault" type="text" id="phone"/></li><br/>
-	<li className="studentProfileDefault"><label>Permanent address: </label>  <textarea className="studentProfileDefault" id="21" rows="4" cols="10"></textarea> </li><br/><br/><br/>
+	<li className="studentProfileDefault"><tr className="studentProfileDefault"><label>Known languages: </label> </tr>      <td className="studentProfileDefault">  <textarea className="studentProfileDefault" value={this.state.skills} id="7" rows="2" cols="10"></textarea></td> </li><br/><br/><br/><br/>
+<li className="studentProfileDefault"><tr className="studentProfileDefault"><label>Mention if any online courses done:</label></tr> <td className="studentProfileDefault"><textarea className="studentProfileDefault" id="8" rows="3" cols="20" name="onlineCourses" value={this.state.onlineCourses} onChange={this.changedState}></textarea></td></li><br/><br/><br/><br/>
+	<li className="studentProfileDefault"><tr className="studentProfileDefault"><label>Mention if any projects done:</label></tr>   <td className="studentProfileDefault"> <textarea className="studentProfileDefault" id="pro" rows="3" cols="20"></textarea></td></li><br/><br/><br/><br/>
+	<li className="studentProfileDefault"><tr className="studentProfileDefault"><label>Skills: </label></tr>      <td className="studentProfileDefault"> <textarea className="studentProfileDefault" id="20" rows="3" cols="20" name="skills" value={this.state.skills} onChange={this.changedState}></textarea></td></li><br/><br/><br/><br/>
+	<li className="studentProfileDefault"><tr className="studentProfileDefault"><label>Email-ID:</label> </tr>     <td className="studentProfileDefault"><input className="studentProfileDefault" type="text" id="12" name="email" value={this.state.email} onChange={this.changedState}/></td></li><br/>
+	<li className="studentProfileDefault"><tr className="studentProfileDefault"><label>Phone-no:</label>  </tr>    <td className="studentProfileDefault"><input className="studentProfileDefault" type="text" id="phone" name="phone" value={this.state.phone} onChange={this.changedState}/></td></li><br/>
+	<li className="studentProfileDefault"><tr className="studentProfileDefault"><label>Permanent address: </label></tr>    <td className="studentProfileDefault"><textarea className="studentProfileDefault" id="21" rows="4" cols="10" name="permanentAddress" value={this.state.permanentAddress} onChange={this.changedState}></textarea></td> </li><br/><br/><br/>
 	</ol>
+	</table>
 	</form>
 	<div>
 	<label>Click the button to add resume:</label> <form encType="multipart/form-data" action="/upload/image" method="post">
@@ -111,17 +162,22 @@ render() {
   }
 }
 
-function Details() {
+class Details extends React.Component{
+	componentDidMount(){
+		setTimeout(()=>{window.location.href="/studentdashboard";},1500);
+	}
+	render(){
   return (
   <div>
   <div className="substudentProfileDefault">
         <center><h1>Thank You!!</h1></center>
     </div>
 <div className="detailstudentProfileDefault">
-  <center><p>Your response has been submitted</p></center>
+  <center><p>Your response has been submitted, and profile updated.</p></center>
 </div>
 </div>
   );
+}
 }
 
 export  {App as SubmitProfile,Details as ProfileSubmitted};

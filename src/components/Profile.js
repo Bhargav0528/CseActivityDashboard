@@ -157,6 +157,7 @@ export default class Profile extends Component {
               />
 
               <a href="#">Help & Feedback</a>
+              <a href="/sprofile">Edit Profile</a>
               <a href="auth" onClick={this.firebaseSignOut.bind(this)}>Sign Out</a>
             </Navigation>
           </Header>

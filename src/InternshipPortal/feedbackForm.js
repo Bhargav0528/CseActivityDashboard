@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import './feedbackForm.css';
-import firebase from '../config/firebaseConfig';
+import firebase from '../config/firebaseConfig.js';
 
 class App extends Component {
   constructor() {
     super();
     this.state = {
+		user:"",
       currentItem: '',
       username: '',
       comment: '',
@@ -22,12 +23,12 @@ class App extends Component {
   }
   handleSubmit(e) {
     e.preventDefault();
-    const itemsRef = firebase.database().ref('internships/internship/feedback');
+    const itemsRef = firebase.database().ref('internships/feedback');
     const item = {
       usn: this.state.usn,
       content: this.state.comment,
       email: this.state.currentItem,
-      user: this.state.username
+      user: this.state.user
     }
     itemsRef.push(item);
     this.setState({
@@ -39,7 +40,11 @@ class App extends Component {
   }
   
   componentDidMount() {
-    const itemsRef = firebase.database().ref('internships/internship/feedback');
+	  setTimeout(()=>{
+		  if(firebase.auth().currentUser){
+			  this.setState({user:firebase.auth().currentUser.uid});
+		  }
+    const itemsRef = firebase.database().ref('internships/feedback');
     itemsRef.on('value', (snapshot) => {
       let items = snapshot.val();
       let newState = [];
@@ -56,6 +61,7 @@ class App extends Component {
         items: newState
       });
     });
+	  },5000);
   }
 
   

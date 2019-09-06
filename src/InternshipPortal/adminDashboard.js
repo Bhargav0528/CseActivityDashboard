@@ -1,27 +1,44 @@
 import React from 'react';
 import {Link} from 'react-router-dom';
 import './adminDashboard.css';
-import firebase from '../config/firebaseConfig';
+import firebase from '../config/firebaseConfig.js';
+import InternshipFeedbacks from './internshipfeedbks.js';
 import Select from 'react-select';
+import CreatableSelect from 'react-select/creatable';
 import "react-step-progress-bar/styles.css";
 import { ProgressBar, Step } from "react-step-progress-bar";
-
-
+import {Tabs, Tab, Badge, Spinner} from 'react-mdl';
 
 class Header extends React.Component{
 	constructor(){
 		super();
 		this.openSideBar=this.openSideBar.bind(this);
+		this.gotoNewInternship=this.gotoNewInternship.bind(this);
+		this.gotoNewNotification=this.gotoNewNotification.bind(this);
+		this.gotoNewTest=this.gotoNewTest.bind(this);
+		this.gotoSkillSearch=this.gotoSkillSearch.bind(this);
 	}
 	openSideBar(){
 		document.getElementById("sidebar").style.display="block";
 		document.getElementById("sidebar").style.visibility="visible";
 	}
+	gotoNewInternship(){
+		window.location.href="/newinternship";
+	}
+	gotoNewTest(){
+		window.location.href="/createminitest";
+	}
+	gotoNewNotification(){
+		window.location.href="/sendnotification";
+	}
+	gotoSkillSearch(){ window.location.href="/skillsearchinternship"; }
 	render(){
 		return(
 		<div className="header">
-		<button className="sidebar" onClick={this.openSideBar}><img src="menu-icon.png" className="sidebar" alt="Menu"/></button><Link to="/admindashboard"><img className="icon" src='icon.png' alt="Logo"/><span className="header">{this.props.pageTitle}</span></Link>
-		<button className="login">{this.props.userName}</button>
+		<button className="sidebar" onClick={this.openSideBar}><img src="menu-icon.png" className="sidebar" alt="Menu"/></button><Link to="/admindashboard"><img className="icon" src="DSILogo.png" alt="Logo"/><span className="header">{this.props.pageTitle}</span></Link>
+		<div className="actiondiv"><button className="actionsdiv" onClick={this.gotoNewInternship}>New Internship</button><button className="actionsdiv" onClick={this.gotoNewTest}>New Test</button><button className="actionsdiv" onClick={this.gotoNewNotification}>Send Notification</button>
+		<button className="actionsdiv" onClick={this.gotoSkillSearch}>Skill Search</button>
+		</div>
 		</div>
 	);}
 }
@@ -29,7 +46,6 @@ class Header extends React.Component{
 class ActionsDiv extends React.Component{
 	constructor(){
 		super();
-		this.contactFirebase = this.contactFirebase.bind(this);
 		this.gotoApplications=this.gotoApplications.bind(this);
 		this.gotoOngoing=this.gotoOngoing.bind(this);
 		this.gotoNewInternship=this.gotoNewInternship.bind(this);
@@ -37,18 +53,9 @@ class ActionsDiv extends React.Component{
 		this.gotoCompletedInternship=this.gotoCompletedInternship.bind(this);
 		this.gotoOpenInternship=this.gotoOpenInternship.bind(this);
 		this.gotoSendNotification=this.gotoSendNotification.bind(this);
+		this.gotoSkillSearch=this.gotoSkillSearch.bind(this);
 	}
-	static defaultProps = { onGoingLoc:"#ongoing", applicationsLoc:"#toselect", newInternshipLoc:"/newInternship", miniTestLoc:"/createminitest"}
-	contactFirebase(){
-		firebase.database().ref('/.info/serverTimeOffset')
-  .once('value')
-  .then(function stv(data) {
-	  let dt=new Date(data.val() + Date.now());
-    console.log(dt,data.val(),Date.now());
-  }, function (err) {
-    return err;
-  });
-	}
+	static defaultProps = { onGoingLoc:"/admindashboard#ongoing", applicationsLoc:"/admindashboard#toselect", newInternshipLoc:"/newInternship", miniTestLoc:"/createminitest"}
 	gotoOngoing(){				window.location.href=this.props.onGoingLoc;	}
 	gotoApplications(){			window.location.href=this.props.applicationsLoc;	}
 	gotoNewInternship(){		window.location.href=this.props.newInternshipLoc;	}
@@ -56,20 +63,136 @@ class ActionsDiv extends React.Component{
 	gotoCompletedInternship(){	window.location.href="/completedinternship"; 	}
 	gotoOpenInternship(){		window.location.href="/openinternship";		}
 	gotoSendNotification(){	window.location.href="/sendnotification";	}
+	gotoSkillSearch(){ window.location.href="/skillsearchinternship"; }
 	render(){
 		return(
 		<div className="actionsdiv">
 		<h3 className="actionsdiv">Actions</h3>
-		<button className="actionsdiv1" onClick={this.gotoApplications}>Manage Applications</button>
-		<button className="actionsdiv1" onClick={this.gotoOngoing}>Manage Ongoing Internships</button>
 		<button className="actionsdiv" onClick={this.gotoNewInternship}>New Internship</button>
-		<button className="actionsdiv" onClick={this.gotoNewInternshipLink}>New Internship Link</button>
-		<button className="actionsdiv" onClick={this.gotoOpenInternship}>Manage Open Internships</button>
-		<button className="actionsdiv" onClick={this.gotoCompletedInternship}>Manage Ended Internships</button>
-		<Link to={this.props.miniTestLoc}><button className="actionsdiv">New Mini Test</button></Link>
-		<button className="actionsdiv" onClick={this.gotoSendNotification}>Send Notification</button>
+		<button className="actionsdiv" onClick={this.gotoNewInternshipLink}>Internship Link</button>
+		<Link to={this.props.miniTestLoc}><button className="actionsdiv">New Test</button></Link>
+		<button className="actionsdiv" onClick={this.gotoSendNotification}>Custom Notification</button>
+		<button className="actionsdiv" onClick={this.gotoSkillSearch}>Skill Search</button>
 		</div>
 		);
+	}
+}
+
+class SkillSearch extends React.Component{
+	constructor(){
+		super();
+		this.state={
+			userValid:null,
+			responselist:[],
+			skilloptions:[],
+			selectedoption:[]
+		};
+		this.processSkillSet=this.processSkillSet.bind(this);
+		this.searchBySkill=this.searchBySkill.bind(this);
+		this.handleChange=this.handleChange.bind(this);
+	}
+	searchBySkill(){
+		let skilllist=[];
+		for(var l in this.state.selectedoption){
+			skilllist.push(this.state.selectedoption[l].value);
+		}
+		let resplist=[];
+		for(var i in skilllist){
+			for(var j in this.state.studentData){
+				if(this.state.studentData[j].skills){
+					if(this.state.studentData[j].skills.includes(skilllist[i])){
+						let z=false;
+						for(var k in resplist){
+							if(resplist[k].uid==j){
+								resplist[k].pr+=1;
+								z=true;
+								break;
+							}							
+						}
+						if(!z){
+							resplist.push({data:this.state.studentData[j],uid:j,pr:1});
+						}
+					}
+				}
+			}
+		}
+		resplist.sort(function(a,b){
+			if((a.pr>b.pr) && a.data.doingInternship===false){return -1; }
+			else if((a.pr<b.pr) && b.data.doingInternship===false){return 1;}
+			else if((a.pr===b.pr)  && a.data.doingInternship===false && b.data.doingInternship===false){return 0;}
+			else if(a.data.doingInternship===true && b.data.doingInternship===false){return 1; }
+			else if(a.data.doingInternship===false && b.data.doingInternship===true){return -1; }
+			else{ return 0; }
+		});
+		this.setState({responselist:resplist});
+	}
+	processSkillSet(){
+		let sk=[],sk2=[];
+		let sdata=Object.assign({},this.state.studentData);
+		for(var i in sdata){
+			for(var j in sdata[i].skills){
+				if(!sk.includes(sdata[i].skills[j].toUpperCase())){
+					sk.push(sdata[i].skills[j].toUpperCase());
+					sk2.push({label:sdata[i].skills[j],value:sdata[i].skills[j].toUpperCase()});
+				}
+				sdata[i].skills[j]=sdata[i].skills[j].toUpperCase();
+			}
+		}
+		this.setState({skilloptions:sk2,studentData:sdata});
+	}
+	handleChange = selectedoption => {
+		this.setState({ selectedoption });
+	  };
+	componentDidMount(){
+		firebase.auth().onAuthStateChanged((user) => {
+		if (user) {
+			if(!user.isAnonymous){
+				firebase.database().ref("users/"+user.uid+"/teacher").once("value").then((snapshot)=>{
+					if(snapshot.val()){this.setState({userValid:true});
+					firebase.database().ref("internships/students").once("value").then((sn)=>{
+						this.setState({studentData:sn.val()});
+						this.processSkillSet();
+					});
+					
+					}
+					else{this.setState({userValid:false});}
+				});
+			}
+			else{window.location.href="/";}
+		} 
+		else{
+			window.location.href="/";
+		}
+		});
+		
+	}
+	render(){
+		if(this.state.userValid==null){
+			return(<div className="closedDiv"><Spinner/></div>);
+		}
+		else if(this.state.userValid){
+			const { selectedoption } = this.state;
+			return(<div><Header pageTitle="Search Student By Skill"/>
+			<div className="closedDiv">
+			<Select options={this.state.skilloptions} value={this.state.selectedoption} onChange={this.handleChange} isMulti={true}/><br/>
+			<button className="btn" onClick={this.searchBySkill}>Search</button>
+			{this.state.responselist?<table style={{width:'100%'}}><tbody>
+				{this.state.responselist.map((item,index)=>{return(
+				<tr className={item.data.doingInternship?"searchskill1":"searchskill"} key={index}><td>
+				<div className="searchskill">
+				<h4>{item.data.fullName}</h4> - {item.data.usn} {"("+item.data.sem+" "+item.data.sec+")"} {item.data.doingInternship?<b>(Doing internship)</b>:""}<br/>
+				<h4>Skills: </h4> {item.data.skills.map((item1,index1)=>{return(<span key={index1}>{item1}, </span>);})}<br/>
+				<a href={"mailto:"+item.data.email}><img src="mailicon.png" className="internshipIcon"/></a> <a href={"tel:"+item.data.phone}><img src="callicon.png" className="internshipIcon"/></a> <a className="internship1StudentApplied" href={"https://wa.me/91"+item.data.phone} target="_blank"><img src="whatsappicon.png" className="internshipIcon"/></a><br/>
+				</div>
+				</td></tr>
+				);})}
+				</tbody></table>:""}
+			</div></div>
+			);
+		}
+		else{
+			return(<div><p className="unauthorisedAccess">Access Denied</p><span className="unauthorisedAccess">You are not allowed access to this page.</span></div>);
+		}
 	}
 }
 
@@ -79,11 +202,12 @@ class MainPage extends React.Component{
 		this.state={
 			internship:"",
 			type:"",
-			userValid:false,
+			userValid:true,
 			internshipdata:null,
-			userdata:null,
 			studentdata:null,
-			loaded:false
+			loaded:false,
+			activeTab:0,
+			tabNotifs:[0,0,0,0]
 		}
 		this.closeSideBar=this.closeSideBar.bind(this);
 		this.setInternshipId=this.setInternshipId.bind(this);
@@ -108,45 +232,60 @@ class MainPage extends React.Component{
 		this.setState(st);
 	}
 	componentDidMount(){
-		let newState=new Object();
+		let statem=this.setStateMethod;
+		  firebase.auth().onAuthStateChanged((user) => {
+		if (user) {
+			if(!user.isAnonymous){
+			firebase.database().ref("users/"+user.uid+"/teacher").once("value").then(function(snapshot){
+			if(snapshot.val()){ statem({userValid:true}); }
+			else{ statem({userValid:false});}
+			});}
+			else{window.location.href="/";}
+		} 
+		else{
+			window.location.href="/";
+		}
+		}); 
 		let updateState=this.setStateMethod;
-		newState.internship=null;
-		newState.type="";
-		/*let uid=firebase.auth().currentUser.uid;
-		firebase.database().ref("users/"+uid+"/teacher").once("value").then(function(snapshot){
-			if(snapshot.val()){ newState.userValid=true; }
-		});*/
-		newState.userValid=true; //Remove after integration
 		firebase.database().ref("internships/students").once("value").then(function(s){
-			newState.studentdata=s.val();
+			let ns=new Object();
+			ns.studentdata=s.val();
 			firebase.database().ref("internships/internship").once("value").then(function(s1){
-			newState.internshipdata=s1.val();
-			firebase.database().ref("users").once("value").then(function(s2){
-			newState.userdata=s2.val();
-			newState.loaded=true;
-			updateState(newState);
+			ns.internshipdata=s1.val();
+			ns.loaded=true;
+			let notifcount=[0,0,0,0];
+			for(var i in ns.internshipdata){
+				if(ns.internshipdata[i].approved==false){
+					notifcount[2]+=1;
+				}
+			}
+			ns.tabNotifs=notifcount;
+			updateState(ns);
 		});
-		});
-		});
-		this.setState(newState);
+		});	
+		
 	}
 	render(){
 		return(
-		<div>
+		<div className="mainPageInternshipPortal">
 		{this.state.userValid?<div>
-		<Header pageTitle="Admin Dashboard" userName="Sample Username" linkto={true}/>
+		<Header pageTitle="Admin Dashboard" linkto={true}/>
 		<div className="sidebar" id="sidebar">
 		<button className="sidebarclose" onClick={this.closeSideBar}>&times;</button>
-		<ActionsDiv onGoingLoc="/#ongoing" applicationsLoc="/#toselect"/>
+		<ActionsDiv onGoingLoc="/admindashboard#ongoing" applicationsLoc="/admindashboard#toselect"/>
 		</div>
-		<div className="actiondiv">
-		<ActionsDiv/></div>
+		<Tabs id="categoryTabAdminDashboard" activeTab={this.state.activeTab} onChange={(tabId)=>this.setState({activeTab:tabId})} ripple>
+		<Tab className="adminDashboardTab">{this.state.tabNotifs[0]==0?"Applications":<Badge text={this.state.tabNotifs[0]} overlap>Applications</Badge>}</Tab>
+		<Tab className="adminDashboardTab">{this.state.tabNotifs[1]==0?"Ongoing":<Badge text={this.state.tabNotifs[1]} overlap>Ongoing</Badge>}</Tab>
+		<Tab className="adminDashboardTab">{this.state.tabNotifs[2]==0?"Approvals":<Badge text={this.state.tabNotifs[2]} overlap>Approvals</Badge>}</Tab>
+		<Tab className="adminDashboardTab">{this.state.tabNotifs[3]==0?"Completed":<Badge text={this.state.tabNotifs[3]} overlap>Completed</Badge>}</Tab>
+		</Tabs>
 		{this.state.loaded?<div>
 			{this.state.internship?
 			<Internship getStateMethod={this.getState} setInternshipIdMethod={this.setInternshipId}/>:""}
-		<InternshipApplications getStateMethod={this.getState} setInternshipIdMethod={this.setInternshipId} setStateMethod={this.setStateMethod}/><OngoingInternships getStateMethod={this.getState} setInternshipIdMethod={this.setInternshipId} setStateMethod={this.setStateMethod}/>
-		<div className="popup" id="popup"></div></div>:<div><br/><br/><h1>Loading</h1></div>}
-		</div>:<div><p className="unauthorisedAccess">Access Denied</p><span className="unauthorisedAccess">You are not allowed access to this page. If you are supposed to be able to access this page, try logging in again.</span></div>}
+			{this.state.activeTab==0?<InternshipApplications getStateMethod={this.getState} setInternshipIdMethod={this.setInternshipId} setStateMethod={this.setStateMethod}/>:(this.state.activeTab==1)?<OngoingInternships getStateMethod={this.getState} setInternshipIdMethod={this.setInternshipId} setStateMethod={this.setStateMethod}/>:(this.state.activeTab==2)?<OpenInternship1 getStateMethod={this.getState} setInternshipIdMethod={this.setInternshipId} setStateMethod={this.setStateMethod}/>:<CompletedInternship1 getStateMethod={this.getState} setInternshipIdMethod={this.setInternshipId} setStateMethod={this.setStateMethod}/>}
+		<div className="popup" id="popup"></div></div>:<div><br/><br/><img src="loadingicon.png" className="loadingicon"/></div>}
+		</div>:(this.state.userValid==null)?<h1>Loading</h1>:<div><p className="unauthorisedAccess">Access Denied</p><span className="unauthorisedAccess">You are not allowed access to this page.</span></div>}
 		</div>
 		);
 	}
@@ -189,8 +328,8 @@ class InternshipApplications extends React.Component{
 		let newState=Object.assign({},t);
 		newState.internships=[];
 		for(var i in newState.internshipdata){
-			if(newState.internshipdata[i].applicationdt<=dt && newState.internshipdata[i].startdt>dt && newState.internshipdata[i].isComplete==false){
-				let item=newState.internshipdata[i];
+			if(newState.internshipdata[i].startdt>dt && newState.internshipdata[i].isComplete==false && newState.internshipdata[i].approved){
+				let item=Object.assign({},newState.internshipdata[i]);
 				item.duration=(item.duration%7==0)?((item.duration/7)+" week(s)"):((item.duration/30)+" month(s)");
 				item.appliedcount=(item.applied?item.applied.length:0);
 				item.id=i;
@@ -203,10 +342,24 @@ class InternshipApplications extends React.Component{
 				else						tmp=0;
 				item.progress=tmp;
 				let dt1=new Date(item.startdt);
-				item.startdt=dt1.getDate()+"/"+(dt1.getMonth()+1)+"/"+dt1.getFullYear();
+				item.startdt1=dt1.getDate()+"/"+(dt1.getMonth()+1)+"/"+dt1.getFullYear();
 				newState.internships.push(item);
 			}
 		}
+		newState.internships.sort(function(a,b){
+			if(a.progress>=80 && b.progress>=80){return 0;}
+			else if(a.progress>=80){return 1;}
+			else if(b.progress>=80){return -1;}
+			else if(a.progress==b.progress && a.startdt>b.startdt){return 1;}
+			else if(a.progress==b.progress && a.startdt<b.startdt){return -1;}
+			else if(a.progress<b.progress && a.startdt<b.startdt){return -1;}
+			else if(a.progress>b.progress && a.startdt>b.startdt){ return 1;}
+			else if(a.progress<b.progress && a.startdt==b.startdt){ return -1;}
+			else if(a.progress>b.progress && a.startdt==b.startdt){return 1;}
+			else if(a.applicationdt>b.applicationdt){return 1;}
+			else if(b.applicationdt>a.applicationdt){return -1;}
+			else{return 0; }
+		});
 		this.setState(newState);
 		let animateProgress=this.animateProgress;
 		setTimeout(function(){
@@ -222,40 +375,41 @@ class InternshipApplications extends React.Component{
 			<div key={item.id} className="internship" onClick={()=>{this.gotoInternship(item.id)}}>
 			<h3 className="internship">{item.title}</h3>
 			<p className="internshipCompany">{item.companyName}</p>
-			<p className="internship"><span className="internship">No. of students applied: {item.appliedcount}</span><span className="internship">Duration: {item.duration}</span><span className="internship">Starts On: {item.startdt}</span></p>
+			<p className="internship"><span className="internship">No. of students applied: {item.appliedcount}</span><span className="internship">Duration: {item.duration}</span><span className="internship">Starts On: {item.startdt1}</span></p>
 			<a href={"tel:"+item.companyPhone} onClick={this.stopProp}><button className="internship">Call Company</button></a>
 			<a href={"mailto:"+item.companyMail} onClick={this.stopProp}><button className="internship">Email Company</button></a>
-			<h3 className="internshipStatus">Status: </h3>
+			<h3 className="internshipStatus">Status: </h3><br/>
 			<div className="internshipStatus">
-			<ProgressBar percent={item.progress}  filledBackground="linear-gradient(90deg,yellow,green)">
+			<ProgressBar percent={item.progress} filledBackground="linear-gradient(90deg,yellow,green)">
 				<Step transition="scale">
 				  {({ accomplished }) => (
-					<img style={{ filter: `grayscale(${accomplished ? 0 : 80}%)` }}  width="20" src="circle.png"/>
+					<img style={{ filter: `grayscale(${accomplished ? 0 : 80}%)` }}  width="75" src="circle1.png"/>
+				  )}
+				</Step>
+				
+				<Step transition="scale">
+				  {({ accomplished }) => (
+					<img style={{ filter: `grayscale(${accomplished ? 0 : 80}%)` }}  width="75" src="circle2.png"/>
 				  )}
 				</Step>
 				<Step transition="scale">
 				  {({ accomplished }) => (
-					<img style={{ filter: `grayscale(${accomplished ? 0 : 80}%)` }}  width="20" src="circle.png"/>
+					<img style={{ filter: `grayscale(${accomplished ? 0 : 80}%)` }}  width="75" src="circle3.png"/>
 				  )}
 				</Step>
 				<Step transition="scale">
 				  {({ accomplished }) => (
-					<img style={{ filter: `grayscale(${accomplished ? 0 : 80}%)` }}  width="20" src="circle.png"/>
+					<img style={{ filter: `grayscale(${accomplished ? 0 : 80}%)` }}  width="75" src="circle4.png"/>
 				  )}
 				</Step>
 				<Step transition="scale">
 				  {({ accomplished }) => (
-					<img style={{ filter: `grayscale(${accomplished ? 0 : 80}%)` }}  width="20" src="circle.png"/>
+					<img style={{ filter: `grayscale(${accomplished ? 0 : 80}%)` }}  width="80" src="circle5.png"/>
 				  )}
 				</Step>
 				<Step transition="scale">
 				  {({ accomplished }) => (
-					<img style={{ filter: `grayscale(${accomplished ? 0 : 80}%)` }}  width="20" src="circle.png"/>
-				  )}
-				</Step>
-				<Step transition="scale">
-				  {({ accomplished }) => (
-					<img style={{ filter: `grayscale(${accomplished ? 0 : 80}%)` }}  width="20" src="circle.png"/>
+					<img style={{ filter: `grayscale(${accomplished ? 0 : 80}%)` }}  width="75" src="circle6.png"/>
 				  )}
 				</Step>
 		</ProgressBar>
@@ -291,8 +445,8 @@ class OngoingInternships extends React.Component{
 		let newState=Object.assign({},t);
 		newState.internships=[];
 		for(var i in newState.internshipdata){
-			if(newState.internshipdata[i].applicationdt<dt && newState.internshipdata[i].startdt<=dt && newState.internshipdata[i].isComplete==false){
-				let item=newState.internshipdata[i];
+			if((newState.internshipdata[i].startdt<=dt && newState.internshipdata[i].isComplete==false)||(newState.internshipdata[i].isStarted && newState.internshipdata[i].isComplete==false)){
+				let item=Object.assign({},newState.internshipdata[i]);
 				let days=item.duration;
 				item.duration=(item.duration%7==0)?((item.duration/7)+" week(s)"):((item.duration/30)+" month(s)");
 				item.appliedcount=(item.applied?item.applied.length:0);
@@ -300,7 +454,7 @@ class OngoingInternships extends React.Component{
 				let tmp=((Date.now()-item.startdt)/(days*86400000))*100;
 				item.progress=tmp;
 				let dt1=new Date(item.startdt);
-				item.startdt=dt1.getDate()+"/"+(dt1.getMonth()+1)+"/"+dt1.getFullYear();
+				item.startdt1=dt1.getDate()+"/"+(dt1.getMonth()+1)+"/"+dt1.getFullYear();
 				newState.internships.push(item);
 			}
 		}
@@ -315,7 +469,7 @@ class OngoingInternships extends React.Component{
 			<div key={item.id} className="internship" onClick={()=>{this.gotoInternship(item.id)}}>
 			<h3 className="internship">{item.title}</h3>
 			<p className="internshipCompany">{item.companyName}</p>
-			<p className="internship"><span className="internship">No. of students applied: {item.appliedcount}</span><span className="internship">Duration: {item.duration}</span><span className="internship">Started On: {item.startdt}</span></p>
+			<p className="internship"><span className="internship">No. of students applied: {item.appliedcount}</span><span className="internship">Duration: {item.duration}</span><span className="internship">Started On: {item.startdt1}</span></p>
 			<a href={"tel:"+item.companyPhone} onClick={this.stopProp}><button className="internship">Call Company</button></a>
 			<a href={"mailto:"+item.companyMail} onClick={this.stopProp}><button className="internship">Email Company</button></a>
 			<h3 className="internshipStatus">Status: </h3>
@@ -355,15 +509,112 @@ class Internship extends React.Component{
 			shortlisted:[],
 			stipend:0,
 			minitests:[],
-			loading:false
+			loading:false,
+			remarks:"",
+			companyDesc:"",
+			description:""
 		}
 		this.clearInternship=this.clearInternship.bind(this);
 		this.approveInternship=this.approveInternship.bind(this);
 		this.getInternshipState=this.getInternshipState.bind(this);
+		this.deleteInternship=this.deleteInternship.bind(this);
+		this.updateRemarks=this.updateRemarks.bind(this);
+		this.changedState=this.changedState.bind(this);
+		this.markInternshipComplete=this.markInternshipComplete.bind(this);
+		this.gotoEditInternship=this.gotoEditInternship.bind(this);
+		this.updateResumeLink=this.updateResumeLink.bind(this);
+		this.shortlistCutoffApply=this.shortlistCutoffApply.bind(this);
+		this.removeShortlist=this.removeShortlist.bind(this);
+		this.applyShortlist=this.applyShortlist.bind(this);
+		this.resetShortlist=this.resetShortlist.bind(this);
+		this.toggleTest=this.toggleTest.bind(this);
+		this.sendMiniTestNotif=this.sendMiniTestNotif.bind(this);
+		this.completeMinitestNotif=this.completeMinitestNotif.bind(this);
+		this.finaliseShortlist=this.finaliseShortlist.bind(this);
+		this.sendShortlist=this.sendShortlist.bind(this);
+		this.closeOnSend=this.closeOnSend.bind(this);
+		this.undertakingComplete=this.undertakingComplete.bind(this);
+		this.startInternship=this.startInternship.bind(this);
+		this.copyInternship=this.copyInternship.bind(this);
+		this.expandCompanyDesc=this.expandCompanyDesc.bind(this);
+		this.expandInternshipDesc=this.expandInternshipDesc.bind(this);
+		this.expandSkillsList=this.expandSkillsList.bind(this);
+		this.expandInternshipOtherDetails=this.expandInternshipOtherDetails.bind(this);
+		this.expandInternsFeedback=this.expandInternsFeedback.bind(this);
+	}
+	changedState(e){
+	  this.setState({
+		[e.target.name]: e.target.value
+	});	
+	}
+	expandInternshipOtherDetails(){
+		if(document.getElementById("internshipOtherDetailsAdminDashboard").style.display=="none"){
+			document.getElementById("internshipOtherDetailsAdminDashboard").style.display="block";
+			document.getElementById("internshipOtherDetailsBtnAdminDashboard").innerHTML="Hide";
+		}
+		else{
+			document.getElementById("internshipOtherDetailsAdminDashboard").style.display="none";
+			document.getElementById("internshipOtherDetailsBtnAdminDashboard").innerHTML="Expand";
+		}
+	}
+	expandCompanyDesc(){
+		if(document.getElementById("companyDescAdminDashboard").style.display=="none"){
+			document.getElementById("companyDescAdminDashboard").style.display="inline-block";
+			document.getElementById("companyDescBtnAdminDashboard").innerHTML="Hide";
+		}
+		else{
+			document.getElementById("companyDescAdminDashboard").style.display="none";
+			document.getElementById("companyDescBtnAdminDashboard").innerHTML="Expand";
+		}
+	}
+	expandInternshipDesc(){
+		if(document.getElementById("internshipDescAdminDashboard").style.display=="none"){
+			document.getElementById("internshipDescAdminDashboard").style.display="block";
+			document.getElementById("internshipDescBtnAdminDashboard").innerHTML="Hide";
+		}
+		else{
+			document.getElementById("internshipDescAdminDashboard").style.display="none";
+			document.getElementById("internshipDescBtnAdminDashboard").innerHTML="Expand";
+		}
+	}
+	expandSkillsList(){
+		if(document.getElementById("skillsListAdminDashboard").style.display=="none"){
+			document.getElementById("skillsListAdminDashboard").style.display="block";
+			document.getElementById("skillsListBtnAdminDashboard").innerHTML="Hide";
+		}
+		else{
+			document.getElementById("skillsListAdminDashboard").style.display="none";
+			document.getElementById("skillsListBtnAdminDashboard").innerHTML="Expand";
+		}
+	}
+	expandInternsFeedback(){
+		if(document.getElementById("internsfeedbackAdminDashboard").style.display=="none"){
+			document.getElementById("internsfeedbackAdminDashboard").style.display="block";
+			document.getElementById("internsfeedbackBtnAdminDashboard").innerHTML="Hide";
+		}
+		else{
+			document.getElementById("internsfeedbackAdminDashboard").style.display="none";
+			document.getElementById("internsfeedbackBtnAdminDashboard").innerHTML="Expand";
+		}
+	}
+	gotoEditInternship(){
+		let id=this.state.id;
+		let res=encodeURIComponent(id);
+		let link1="/editinternship?internship="+res;
+		window.location.href=link1;
+	}
+	copyInternship(){
+		let id=this.state.id;
+		let res=encodeURIComponent(id);
+		let link1="/editinternship?internship="+res+"&copy=true";
+		window.location.href=link1;
 	}
 	clearInternship(){
-		if(this.state.type=="application" || this.state.type=="ongoing"){
+		document.getElementById("categoryTabAdminDashboard").style.display="block";
+		if(this.state.type=="application"){
 			document.getElementById("toselect").style.display="block";
+		}
+		else if(this.state.type=="ongoing"){
 			document.getElementById("ongoing").style.display="block";
 		}
 		else if(this.state.type=="open"){
@@ -375,20 +626,58 @@ class Internship extends React.Component{
 		let clearMethod=this.props.setInternshipIdMethod;
 		clearMethod("","");
 	}
+	deleteInternship(){
+		let ans=window.confirm("Do you want to delete this Internship?","");
+		let ans2=false;
+		if(ans){
+			ans2=window.confirm("Are you sure, this cannot be undone, all students will be unenrolled","");
+			if(ans2){
+				this.markInternshipComplete();
+				
+				firebase.database().ref("internships/internship/"+this.state.id).set({}).then(function(){window.location.href="/admindashboard";});
+			}
+			else{ return; }
+		}
+		else{
+			return;
+		}
+	}
+	updateResumeLink(url,i){
+		let s=this.state.appliedUserData;
+		for(var j=0;j<s.length;j++){
+			if(s[j].uid==i){
+				s[j].resume=url;
+			}
+		}
+		this.setState({shortlisted:s});		
+	}
 	componentDidMount(){
 		document.getElementById("internshipBody").style.display="block";
+		document.getElementById("companyDescAdminDashboard").style.display="none";
+		document.getElementById("internshipDescAdminDashboard").style.display="none";
+		document.getElementById("categoryTabAdminDashboard").style.display="none";
+		document.getElementById("skillsListAdminDashboard").style.display="none";
+		document.getElementById("internshipOtherDetailsAdminDashboard").style.display="none";
+		if(document.getElementById("internsfeedbackAdminDashboard"))
+			document.getElementById("internsfeedbackAdminDashboard").style.display="none";
 		let tmp=this.props.getStateMethod;
 		let temp=tmp();
 		let stateCopy=Object.assign({},temp);
-		let internship=stateCopy.internshipdata[stateCopy.internship];
+		let internship=Object.assign({},stateCopy.internshipdata[stateCopy.internship]);
+		internship.mainRef=temp;
 		internship.type=stateCopy.type;
 		internship.id=stateCopy.internship;
 		internship.appliedLength=0;
+		internship.duration1=(internship.duration%7==0 && internship.duration%30!=0)?(internship.duration/7)+" week(s)":(internship.duration/30)+" month(s)";
 		if(internship.applied){	internship.appliedLength=internship.applied.length;		}
 		let dt=new Date(internship.applicationdt);
-		internship.applicationdt=dt.getDate()+"/"+(dt.getMonth()+1)+"/"+dt.getFullYear();
-		if(internship.type=="application" || internship.type=="ongoing"){
+		internship.applicationdt1=dt.getDate()+"/"+(dt.getMonth()+1)+"/"+dt.getFullYear();
+		dt=new Date(internship.startdt);
+		internship.startdt1=dt.getDate()+"/"+(dt.getMonth()+1)+"/"+dt.getFullYear();
+		if(internship.type=="application"){
 			document.getElementById("toselect").style.display="none";
+		}
+		else if(internship.type=="ongoing"){
 			document.getElementById("ongoing").style.display="none";
 		}
 		else if(internship.type=="open"){
@@ -397,11 +686,11 @@ class Internship extends React.Component{
 		else if(internship.type=="completed"){
 			document.getElementById("completed").style.display="none";
 		}
-		internship.internshipdata=stateCopy.internshipdata;
-		internship.userdata=stateCopy.userdata;
 		internship.studentdata=stateCopy.studentdata;
+		internship.internshipdata=stateCopy.internshipdata;
 		internship.userValid=stateCopy.userValid;
 		let appliedUserdata=[];
+		let uresl=this.updateResumeLink;
 		if(internship.applied){
 		for(var i in internship.studentdata){
 			if(internship.applied.includes(i)){
@@ -420,85 +709,112 @@ class Internship extends React.Component{
 				uid:i,
 				phone:internship.studentdata[i].phone,
 				resumeloc:internship.studentdata[i].resume,
+				resume:"",
 				marks:m,
-				shortlisted:true
+				shortlisted:false,
+				isNew:true,
+				isMember:false,
+				doingInternship:internship.studentdata[i].doingInternship,
+				certifCourse:internship.studentdata[i].courses?internship.studentdata[i].courses:" - ",
+				projects:internship.studentdata[i].projects?internship.studentdata[i].projects:" - "
 			};
+			if(internship.prevApplied){
+				for(var j in internship.prevApplied){
+					if(internship.shortlisted && internship.shortlisted.includes(i)){item.shortlisted=true; item.isNew=false;}
+					else if(internship.prevApplied.includes(i)){ item.shortlisted=false; item.isNew=false; }
+					else{item.shortlisted=true; item.isNew=true;}					
+				}
+			}
+			else{
+				item.shortlisted=true;
+				item.isNew=true;
+			}
+			if(internship.members){
+			if(internship.members.includes(item.uid)){
+				item.isMember=true;
+			}}
 			appliedUserdata.push(item);
-		}}}
-		internship.appliedUserData=appliedUserdata;
-		internship.loading=true;
+		}}
+		if(internship.feedback){
+			for(var x in internship.feedback){
+				let feedbackid=internship.feedback[x].uid;
+				for(var y in appliedUserdata){
+					if(appliedUserdata[y].uid==feedbackid){
+						internship.feedback[x].name=appliedUserdata[y].name;
+						if(internship.feedback[x].score<=5){
+						internship.feedback[x].score=(internship.feedback[x].score-1)*25;}
+						break;
+					}
+				}				
+			}
+		}
+		}
+		internship.appliedUserData=appliedUserdata;	
+		internship.iidf=internship.id;
+		let res=encodeURIComponent(internship.id);
+		let link0=window.location.href;
+		let link1=link0.slice(0,link0.indexOf("admindashboard"))+"studentfeedbackinternship?internship="+res;
+		internship.feedbacklink=link1;
+		if(internship.studentFeedbackByCompany){
+			for(var m in internship.studentFeedbackByCompany){
+				internship.studentFeedbackByCompany[m].usn=internship.studentdata[internship.studentFeedbackByCompany[m].uid].usn;
+			}
+		}
+		if(internship.remarks==" "){internship.remarks=""; }
 		this.setState(internship);
+		for(var i in internship.appliedUserData){
+			if(internship.appliedUserData[i].resumeloc){
+			if(internship.appliedUserData[i].resumeloc.startsWith("resumes")){
+				let uids=internship.appliedUserData[i].uid;
+				firebase.storage().ref(internship.appliedUserData[i].resumeloc).getDownloadURL().then(function(url){
+					uresl(url,uids);
+				});
+			}}
+		}
+
+		this.setState({loading:true});
 	}
 	approveInternship(){
 		let tmp=this.state.id;
 		firebase.database().ref("internships/internship/"+tmp).update({approved:true});
+		this.state.mainRef.internshipdata[tmp].approved=true;
 		this.setState({approved:true});
 	}
 	getInternshipState(){
 		let st=this.state;
 		return st;
 	}
-	render(){		
-		return(
-		<div className="internship1" id="internshipBody">
-		<button onClick={this.clearInternship} className="internship1">&times;</button>
-		<h3 className="internship1">{this.state.title}</h3>
-		<h4 className="internship1">{this.state.companyName}</h4>
-		{(this.state.approved)?<span className="statusText">Approved</span>:<button className="statusText" onClick={this.approveInternship}>Approve</button>}
-		<p className="internship1"><b>Internship Description: </b> {this.state.description}</p>
-		<b className="internship1">Skills Required: </b>
-		<ul className="internship1">
-		{((this.state.skillSet)?(this.state.skillSet.map((item,index)=>{
-			return(<li key={index}>{item}</li>);
-		})):"None")}</ul>
-		<table className="internship1"><tbody>
-		<tr><td><b>Work Hours: </b> {((this.state.workCategory=="full-time")?"Full Time":((this.state.workCategory=="part-time")?"Part Time":"Work From Home"))} - {((this.state.workTimings!="-")?(this.state.workTimings):"Timings Not Mentioned")}</td>
-		<td><b>Stipend:</b> {this.state.stipend}</td><td><b>No. of Students Applied: </b>{this.state.appliedLength}</td></tr>
-		<tr><td><b>Start Date: </b>{this.state.startdt}</td>
-		<td><b>Last Date to apply: </b>{this.state.applicationdt}</td><td><b>Duration:</b> {this.state.duration}</td></tr></tbody></table>
-		{this.state.applied?
-		<div><b>Applied Students:</b><table className="internship1StudentApplied"><tbody>
-		<tr className="internship1StudentApplied"><th>USN</th><th>Name</th><th>Sem &amp; Sec</th><th>Email</th><th>Phone</th></tr>
-		{this.state.appliedUserData.map((item,index)=>{
-			return(<tr key={index} className="internship1StudentApplied">
-			<td>{item.usn}</td>
-			<td>{item.name}</td>
-			<td>{item.sem} {item.sec}</td>
-			<td><a className="internship1StudentApplied" href={"mailto:"+item.email}>{item.email}</a></td>
-			<td><a className="internship1StudentApplied" href={"tel:"+item.phone}>{item.phone}</a></td>
-			</tr>);
-		})}</tbody></table></div>:""}
-		{this.state.type=="completed"?"":(<p className="internship1"><b>Status: </b>{this.state.progress==0?"Applications Closed":(this.state.progress==1?"Test Taken":(this.state.progress==2?"Shortlist Sent":(this.state.progress==3?"Students Finalised":(this.state.progress==4?"Undertaking Signed":"Ready to Start"))))}</p>)}
-		<button className="btn">Call Company</button><button className="btn">Email Company</button>
-		{(this.state.type!="open" && this.state.loading)?<div><InternshipMiniTest getStateMethod={this.getInternshipState}/><InternshipShortlist getStateMethod={this.getInternshipState}/><InternshipUndertaking getStateMethod={this.getInternshipState}/></div>:""}
-		</div>
-		);
-	}
-}
-
-class InternshipMiniTest extends React.Component{
-	constructor(){
-		super();
-		this.state={};
-		this.shortlistCutoffApply=this.shortlistCutoffApply.bind(this);
-		this.removeShortlist=this.removeShortlist.bind(this);
-		this.applyShortlist=this.applyShortlist.bind(this);
-		this.resetShortlist=this.resetShortlist.bind(this);
-		this.toggleTest=this.toggleTest.bind(this);
-		this.sendMiniTestNotif=this.sendMiniTestNotif.bind(this);
-		this.completeMinitestNotif=this.completeMinitestNotif.bind(this);
+	updateRemarks(){
+		let tmp=this.state.id;
+		firebase.database().ref("internships/internship/"+tmp+"/remarks").set(this.state.remarks);
+		this.state.mainRef.internshipdata[tmp].remarks=this.state.remarks;
 	}
 	toggleTest(){
+		let stateinternshipid=this.state.id;
 		if(!(this.state.testEnable)){
-		firebase.database().ref("internships/internship/"+this.state.id).update({testEnable:true}).then(function(){
+			let ans=window.prompt("Set time limit in minutes for the test (0 for none):","");
+			if(ans!=""){
+				ans=parseInt(ans);
+				if(ans==0 || isNaN(ans)){}
+				else{
+					firebase.database().ref("internships/internship/"+stateinternshipid+"/testDuration").set(ans);
+					this.state.mainRef.internshipdata[stateinternshipid].testDuration=ans;
+				}
+			}
+			this.state.mainRef.internshipdata[stateinternshipid].testEnable=true;
+		firebase.database().ref("internships/internship/"+stateinternshipid).update({testEnable:true}).then(function(){
 			document.getElementById("testtoggle").classList="btn1";;
 		});}
 		else{
-			firebase.database().ref("internships/internship/"+this.state.id).update({testEnable:false}).then(function(){
-			document.getElementById("testtoggle").classList="btn";});
+			this.state.mainRef.internshipdata[stateinternshipid].testEnable=false;
+			firebase.database().ref("internships/internship/"+stateinternshipid).update({testEnable:false}).then(function(){
+			document.getElementById("testtoggle").classList="internshipMiniTest	";});
 		}
-		firebase.database().ref("internships/internship/"+this.state.id+"/progress").set(1);
-		this.setState({progress:20});
+		if(this.state.progress<=1){
+		firebase.database().ref("internships/internship/"+stateinternshipid+"/progress").set(1);
+		this.setState({progress:1});
+		this.state.mainRef.internshipdata[stateinternshipid].progress=1;
+		}
 		this.setState({testEnable:!(this.state.testEnable)});
 	}
 	sendMiniTestNotif(){
@@ -524,11 +840,11 @@ class InternshipMiniTest extends React.Component{
 			firebase.database().ref("internships/students/"+uid+"/notifications").once("value").then(function(snapshot){
 				let tmp=snapshot.val();
 				if(tmp){
-				let item={internshipid:iid,notifText:str, type:"minitest"};
+				let item={internshipid:iid,notifText:str, type:"minitest", gotoLink:"/minitest"};
 				tmp.push(item);}
 				else{
 					tmp=[];
-					let item={internshipid:iid,notifText:str, type:"minitest"};
+					let item={internshipid:iid,notifText:str, type:"minitest", gotoLink:"/minitest"};
 				tmp.push(item);}
 				firebase.database().ref("internships/students/"+uid+"/notifications").set(tmp);
 			});
@@ -562,7 +878,9 @@ class InternshipMiniTest extends React.Component{
 		document.getElementById("applyMtestShortlistChanges").style.backgroundColor="orange";
 		document.getElementById("applyMtestShortlistChanges").style.color="white";
 		let tmp=this.state.appliedUserData;
-		tmp[index].shortlisted=false;
+		if(tmp[index].shortlisted==true){
+		tmp[index].shortlisted=false;}
+		else{tmp[index].shortlisted=true;}
 		this.setState({appliedUserData:tmp});
 	}
 	applyShortlist(){
@@ -570,127 +888,66 @@ class InternshipMiniTest extends React.Component{
 		document.getElementById("applyMtestShortlistChanges").style.backgroundColor="#006cb4";
 		document.getElementById("applyMtestShortlistChanges").style.color="white";
 		let id=this.state.id;
+		let title=this.state.title;
 		let shortlist=[];
 		let list=this.state.appliedUserData;
-		for(var i=0;i<list.length;i++){
+		let rejectlist=[],rejects=false;
+		for(var i in list){
 			if(list[i].shortlisted){
-				shortlist.push(list[i].uid);
+				if(list[i].doingInternship){
+					rejects=true;
+					rejectlist.push(list[i]);
+				}
+				else{
+				shortlist.push(list[i].uid);}
 			}
 		}
+		if(rejects){
+			firebase.database().ref("internships/internship/"+id+"/prevApplied").set(this.state.applied);
+			let str="Cannot shortlist the following:\n";
+			for(var k in rejectlist){
+				str+=rejectlist[k].name+" ("+rejectlist[k].usn+")\n";
+			}
+			str+="Reason: Already finalised for an internship";
+			alert(str);
+		}
+		else{
+			if(this.state.progress>2){}
+		else{
 		firebase.database().ref("internships/internship/"+id+"/shortlisted").set(shortlist);
-	}
-	componentDidMount(){
-		let method=this.props.getStateMethod;
-		let resp=method();
-		let newState=Object.assign({},resp);
-		this.setState(newState);
-	}
-	render(){
-		return(
-		<div>
-		{this.state.minitest?
-		<div><hr/>
-		<h3 className="internship1">Test</h3>
-		<b>Scores (%):</b><br/>
-		<table className="internship1StudentApplied"><tbody>
-		<tr className="internship1StudentApplied"><th>USN</th><th>Name</th><th>Sem & Sec</th><th>Email</th><th>Phone</th><th>Marks (%)</th><th></th></tr>
-		{this.state.appliedUserData.map((item,index)=>{return(
-			<tr key={index} className="internship1StudentApplied">
-			<td>{item.shortlisted?item.usn:<del>{item.usn}</del>}</td>
-			<td>{item.shortlisted?item.name:<del>{item.name}</del>}</td>
-			<td>{item.shortlisted?item.sem+" "+item.sec:<del>{item.sem+" "+item.sec}</del>}</td>
-			<td><a className="internship1StudentApplied" href={"mailto:"+item.email}>{item.email}</a></td>
-			<td><a className="internship1StudentApplied" href={"tel:"+item.phone}>{item.phone}</a></td>
-			<td>{item.shortlisted?(item.marks==-1?"Not Taken":item.marks):<del>{item.marks==-1?"Not Taken":item.marks}</del>}</td><td><button onClick={()=>{this.removeShortlist(index);}}>&times;</button></td></tr>
-		);})}</tbody></table>
-		<input type="number" max="100" min="0" placeholder="Cutoff Score" id="cutoff" className="internshipMiniTest"/><button onClick={this.shortlistCutoffApply}>Apply Cutoff</button>
-		<button onClick={this.resetShortlist} className="internshipMiniTest">Reset</button>
-		<button onClick={this.applyShortlist} id="applyMtestShortlistChanges" className="internshipMiniTest">Apply Changes</button><br/>
-		<button className="internshipMiniTest" onClick={this.sendMiniTestNotif}>Call students for test</button>
-		<button className={this.state.testEnable?"btn1":"btn"} onClick={this.toggleTest} id="testtoggle">Enable/Disable Test</button>
-		<div id="popupMinitestNotif" className="popupMinitestNotif">
-		<input type="text" id="minitestNotifContent" placeholder="Notification Text" className="popupMinitestNotif"/>
-		<input type="date" id="minitestNotifDate" required="required"/>
-		<input type="time" id="minitestNotifTime" required="required"/>
-		<button onClick={this.completeMinitestNotif} className="popupMinitestNotif">Send</button><br/><br/>
-		</div>		
-		</div>:""}
-		</div>
-		);
-	}
-}
-
-class InternshipShortlist extends React.Component{
-	constructor(){
-		super();
-		this.state={
-			shortlisted:[]
-		};
-		this.updateShortlist=this.updateShortlist.bind(this);
-		this.sendShortlist=this.sendShortlist.bind(this);
-		this.removeFromShortlist=this.removeFromShortlist.bind(this);
-		this.updateResumeLink=this.updateResumeLink.bind(this);
-		this.closeOnSend=this.closeOnSend.bind(this);
-		this.finaliseShortlist=this.finaliseShortlist.bind(this);
-	}
-	updateResumeLink(url,i){
-		let s=this.state.shortlisted;
-		for(var j=0;j<s.length;j++){
-			if(s[j].uid==i){
-				s[j].resume=url;
-			}
+		firebase.database().ref("internships/internship/"+id+"/prevApplied").set(this.state.applied);
+		/*for(var j in shortlist){
+			let sj=shortlist[j];
+			firebase.database().ref("internships/students/"+sj+"/notifications").once("value").then(function(s){
+				let notifs=s.val();
+				let notif={internshipid:id,notifText:"You have been shortlisted for the internship "+title+". You may be contacted for further selection process."};
+				notifs.push(notif);
+				firebase.database().ref("internships/students/"+sj+"/notifications").set(notifs);
+			});
+		}*/}
 		}
-		this.setState({shortlisted:s});		
-	}
-	updateShortlist(val){
-		let s=val;
-		let shortlistUserdata=[];
-		let uresl=this.updateResumeLink;
-		for(var i=0;i<s.length;i++){
-			let item=this.state.studentdata[s[i]];
-			item.uid=s[i];
-			shortlistUserdata.push(item);
-		}
-		this.setState({shortlisted:shortlistUserdata});
-		for(var j=0;j<s.length;j++){
-			let item=this.state.studentdata[s[j]];
-			firebase.storage().ref(item.resume).getDownloadURL().then(function(url){
-				uresl(url,item.uid);
-			});	
-		}
-	}
-	componentDidMount(){
-		let method=this.props.getStateMethod;
-		let resp1=method();
-		let resp=Object.assign({},resp1);
-		this.setState(resp);
-		let update=this.updateShortlist;
-		firebase.database().ref("internships/internship/"+resp.id+"/shortlisted").on("value",function(snapshot){
-			if(snapshot.val()!=null){
-				update(snapshot.val());
-			}
-			else{update([]);}
-		});		
 	}
 	sendShortlist(){
 		document.getElementById("mailText").style.display="block";
 		document.getElementById("confirmSend").style.display="block";
-		let htmlcontent="<b>To: </b>"+this.state.companyMail+"<br/><b>Subject: </b>DSCE:Internship Shortlist for "+this.state.title+"<br/><br/>Hello, <br/>The following students were shortlisted for the internship "+this.state.title+" posted on the DSCE Internship Portal.<br/>Please go through their skill sets and confirm your requirement for the internship.<br/>Name - Skills - Email<br/>";
+		let htmlcontent="<b>To: </b>"+this.state.companyMail+"<br/><b>Subject: </b>DSCE:Internship Shortlist for "+this.state.title+"<br/><br/>Hello, <br/>The following students were shortlisted for the internship "+this.state.title+" posted on the DSCE Internship Portal.<br/>Please go through their skill sets and confirm your requirement for the internship.<br/>Name - Email (Phone) - Skills<br/><br/>";
 		let mailcontent="mailto:"+this.state.companyMail+"?subject=DSCE:Internship%20Shortlist%20for%20"+encodeURIComponent(this.state.title)+"&body=";
-		let str="Hello, The following students were shortlisted for the internship '"+this.state.title+"' posted on the DSCE Internship Portal.\nPlease go through their skill sets and confirm your requirement for the internship.\nName - Skills - Email\n";
-		for(var i in this.state.shortlisted){
-			str+=this.state.shortlisted[i].fullName+" ("+this.state.shortlisted[i].sem+"Sem) - ";
-			htmlcontent+=this.state.shortlisted[i].fullName+" ("+this.state.shortlisted[i].sem+"Sem) - ";
-			for(var j=0;j<this.state.shortlisted[i].skills.length;j++){
-				str+=this.state.shortlisted[i].skills[j]+", ";
-				htmlcontent+=this.state.shortlisted[i].skills[j]+", ";
+		let str="Hello, The following students were shortlisted for the internship '"+this.state.title+"' posted on the DSCE Internship Portal.\nPlease go through their skill sets and confirm your requirement for the internship.\nName - Email (Phone) - Skills\n\n";
+		for(var i in this.state.appliedUserData){
+			let tmp=this.state.appliedUserData[i];
+			if(tmp.shortlisted==true){
+				str+=tmp.name+" ("+tmp.sem+" Sem) - "+tmp.email+" ("+tmp.phone+") -\n";
+				htmlcontent+=tmp.name+" ("+tmp.sem+" Sem) - "+tmp.email+" ("+tmp.phone+") <br/>";
+				if(tmp.skills){
+				for(var j=0;j<tmp.skills.length;j++){
+					str+=tmp.skills[j]+", ";
+					htmlcontent+=tmp.skills[j]+", ";
+				}}
+				str+="\n \n";
+				htmlcontent+="<br/> <br/>";
 			}
-			str+=" - "+this.state.shortlisted[i].email;
-			htmlcontent+=" - "+this.state.shortlisted[i].email;
-			str+="\n";
-			htmlcontent+="<br/>";
 		}
-		str+="\nFrom, \nDSCE Internship Portal (Auto Generated)";
+		str+="\n\nFrom, \nDSCE Internship Portal (Auto Generated)";
 		htmlcontent+="<br/>From, <br/>DSCE Internship Portal (Auto Generated)";
 		mailcontent+=encodeURIComponent(str);
 		document.getElementById("mailText").innerHTML=htmlcontent;
@@ -699,91 +956,221 @@ class InternshipShortlist extends React.Component{
 	closeOnSend(){ 
 		document.getElementById("mailText").style.display="none";
 		document.getElementById("confirmSend").style.display="none";
+		if(this.state.progress<2){
 		firebase.database().ref("internships/internship/"+this.state.id+"/progress").set(2);
-		this.setState({progress:40});
-	}
-	removeFromShortlist(i){
-		let s=this.state.shortlisted;
-		let temp;
-		if(s.length==1){
-			temp=s[0];
-			s=[];}
-		else{temp=s.pop(i);}
-		firebase.database().ref("internships/internship/"+this.state.id+"/shortlisted").set(s);
-		this.setState({shortlisted:s});
+		this.setState({progress:2});
+		let tmp=this.state.id;
+		this.state.mainRef.internshipdata[tmp].progress=2;
+		}
 	}
 	finaliseShortlist(){
-		if(this.state.finalised && this.state.progress>=60){
-			console.log("finalised");
+		if(this.state.finalised && this.state.progress>=3){
+			
 		}
 		else{
+			let iid=this.state.id;
 			firebase.database().ref("internships/internship/"+this.state.id).update({finalised:true});
-			firebase.database().ref("internships/internship/"+this.state.id).update({progress:3});
-			this.setState({progress:60});
+			this.state.mainRef.internshipdata[iid].finalised=true;
+			if(this.state.progress<=3){
+				firebase.database().ref("internships/internship/"+this.state.id).update({progress:3});
+				this.setState({progress:3});
+				this.state.mainRef.internshipdata[iid].progress=3;
+			}			
+			let title=this.state.title;
+			for(var i=0; i<this.state.shortlisted.length;i++){
+				if(this.state.shortlisted[i].shortlisted){
+				let id=this.state.shortlisted[i].uid;
+				firebase.database().ref("internships/students/"+id+"/notifications").once("value").then(function(s){
+					let notifs=s.val();
+					let notif={internshipid:iid,notifText:"You have been selected for the internship "+title+". Meet the internship cell in the department and sign an undertaking before the start date."};
+					notifs.push(notif);
+					firebase.database().ref("internships/students/"+id+"/notifications").set(notifs);
+				});
+				firebase.database().ref("internships/students/"+id+"/doingInternship").set(true);
+				for(var j in this.state.internshipdata){
+					let temp=this.state.internshipdata[j];
+					if(j==iid){continue;}
+					if(temp.applied){
+					if(temp.applied.includes(i)){
+						let item={shortlisted:temp.shortlisted};
+						if(item.shortlisted.includes(i)){
+							let tmp=[];
+							for(var m in item.shortlisted){
+								if(item.shortlisted[m]!=i){tmp.push(item.shortlisted[m]);}
+							}
+							item.shortlisted=tmp;
+							firebase.database().ref("internships/internship/"+j).update(item);
+						}
+					}
+				}}}
+			}			
+		}
+		setTimeout(function(){
+		window.location.href="/admindashboard";},1000);
+	}
+	startInternship(){
+		firebase.database().ref("internships/internship/"+this.state.id+"/progress").set(5);
+		firebase.database().ref("internships/internship/"+this.state.id+"/startdt").set(Date.now());
+		firebase.database().ref("internships/internship/"+this.state.id+"/isStarted").set(true).then(function(){
+			window.location.href="/admindashboard";
+		});
+	}
+	undertakingComplete(){
+		let id=this.state.id;
+		let mem=[];
+		for(var i in this.state.shortlisted){
+			mem.push(this.state.shortlisted[i].uid);
+		}
+		firebase.database().ref("internships/internship/"+id+"/progress").set(5).then(function(){
+			firebase.database().ref("internships/internship/"+id+"/remarks").set(" ");
+		});
+		this.setState({progress:5});
+		this.state.mainRef.internshipdata[id].progress=5;
+		firebase.database().ref("internships/internship/"+id+"/members").set(mem).then(()=>{window.location.href="/admindashboard";});
+	}
+	markInternshipComplete(){
+		let ans=window.confirm("Do you want to mark this internship as completed?");
+		if(ans){
+			let members=this.state.members;
+			let t=this.state.title;
+			let id=this.state.id;
+			if(members){
+				let n={notifText:"Please provide feedback about the internship "+t+". Click on this notification to provide feedback",
+				gotoLink:"/studentdashboard/feedback?internship="+id,
+				internshipid:id};
+				for(var i in members){
+					firebase.database().ref("internships/students/"+members[i]+"/notifications").once("value").then(function(s){
+						let notifs=s.val();
+						notifs.push(n);
+						firebase.database().ref("internships/students/"+members[i]).update({doingInternship:false,notifications:notifs});
+					});
+				}
+			}
+			firebase.database().ref("internships/internship/"+id+"/isComplete").set(true).then(function(){
+				setTimeout(function(){window.location.href="/admindashboard";},1000);
+			});
 		}
 	}
 	render(){
+
 		return(
-		<div>
-		{(this.state.progress>0 && this.state.appliedLength>0)?
-		<div><hr/>
-		<h3 className="internship1">Shortlist</h3>
-		<table className="internship1StudentApplied"><tbody>
-		<tr><th>USN</th><th>Name</th><th>Sem</th><th>Email</th><th>Phone</th><th>Skills</th><th></th><th></th></tr>
-		{this.state.shortlisted.map((item,index)=>{
-			return(
-			<tr className="internship1StudentApplied" key={index}>
-			<td>{item.usn}</td>
-			<td>{item.fullName}</td>
+		<div className="internship1" id="internshipBody">
+		<button onClick={this.clearInternship} className="internship1">&times;</button>
+		<h3 className="internship1">{this.state.title}</h3>
+		<h4 className="internship1">{this.state.companyName}</h4>
+		{(this.state.approved)?<span className="statusText">Approved</span>:<button className="statusText" onClick={this.approveInternship}>Approve</button>}
+		{(this.state.type=="open")?<div><b>Internship Description: </b><pre>{this.state.description}</pre></div>:<div>
+			<b className="internship1">Internship Description:</b><button id="internshipDescBtnAdminDashboard" onClick={this.expandInternshipDesc}>Expand</button><div id="internshipDescAdminDashboard"><pre className="internship1">{this.state.description}</pre></div></div>}
+		{this.state.type=="open"?<div><b className="internship1">Company Description:</b>{this.state.companyDesc}</div>:<div>
+			<b className="internship1">Company Description:</b><button id="companyDescBtnAdminDashboard" onClick={this.expandCompanyDesc}>Expand</button><div id="companyDescAdminDashboard">{this.state.companyDesc}</div></div>}
+		<b className="internship1">Skills Required: </b>
+		<button id="skillsListBtnAdminDashboard" onClick={this.expandSkillsList}>Expand</button>
+		<ul className="internship1" id="skillsListAdminDashboard">
+		{((this.state.skillSet)?(this.state.skillSet.map((item,index)=>{
+			return(<li key={index}>{item}</li>);
+		})):"None")}</ul><br/>
+		<b className="internship1">Other Details:</b><button id="internshipOtherDetailsBtnAdminDashboard" onClick={this.expandInternshipOtherDetails}>Expand</button>
+		<div id="internshipOtherDetailsAdminDashboard"><table className="internship1"><tbody>
+		<tr><td><b>Work Hours: </b> {((this.state.workCategory=="full-time")?"Full Time":((this.state.workCategory=="part-time")?"Part Time":"Work From Home"))} - {((this.state.workTimings!="-")?(this.state.workTimings):"Timings Not Mentioned")}</td>
+		<td><b>Stipend:</b> {this.state.stipend}</td><td><b>No. of Students Applied: </b>{this.state.appliedLength}</td></tr>
+		<tr><td><b>Start Date: </b>{this.state.startdt1}</td>
+		<td><b>Last Date to apply: </b>{this.state.applicationdt1}</td>
+		<td><b>Duration:</b> {this.state.duration1}</td></tr>
+		<tr><td><b>Interns Required:</b> {this.state.minRequirement==0?"Not Specified":this.state.minRequirement}</td>
+		<td><b># of Tests:</b> {this.state.minitest?this.state.minitest.length:0}</td></tr>
+		</tbody></table></div>
+		{(this.state.type=="completed" || this.state.type=="open")?"":(<p className="internship1"><b>Status: </b>{this.state.progress==0 && this.state.type=="application"?"Applications":(this.state.progress==20?"Test Taken":(this.state.progress==40?"Shortlist Sent":(this.state.progress==60?"Students Finalised":(this.state.progress==80?"Undertaking Signed":"Ready to Start"))))}</p>)}
+		<br/><a href={"tel:"+this.state.companyPhone}><button className="btn">Call Company</button></a><a href={"mailto:"+this.state.companyMail}><button className="btn">Email Company</button></a>
+		<button className="internshipIconbtn" onClick={this.deleteInternship}><img src="deleteicon.png" className="internshipIcon"/>
+		</button><button className="internshipIconbtn" onClick={this.gotoEditInternship}><img src="editicon.png" className="internshipIcon"/></button>
+		<button className="internshipIconbtn" onClick={this.copyInternship}><img src="copyicon.png" className="internshipIcon"/></button>
+		{this.state.type=="ongoing"?<button className="btn" onClick={this.markInternshipComplete}>Internship Completed</button>:""}
+		{(this.state.type!="open" && this.state.type!="application")?<div style={{marginTop:'80px',marginBottom:'80px'}}><span className="blockTitleFont">PROGRESS REMARKS:</span><textarea name="remarks" onChange={this.changedState} value={this.state.remarks} className="remarks"></textarea><br/><button className="btn" onClick={this.updateRemarks}>Update</button></div>:""}
+		{(this.state.studentFeedbackByCompany&&this.state.type=="completed")?<div style={{marginBottom:'80px'}}>
+		<span className="blockTitleFont">COMPANY'S FEEDBACK ON INTERNS:</span>
+			{this.state.studentFeedbackByCompany.map((item4,index4)=>{return(
+				<div className="feedbackInternship" key={index4}>
+				<h4 style={{padding:'0px',margin:'0px',fontSize:'12pt'}}>{item4.name} ({item4.usn})</h4>
+					<span style={{fontSize:'10pt',marginLeft:'10px'}}>{item4.fd}</span>
+				</div>
+			);})}
+		</div>:""}
+		{((this.state.type=="ongoing" || this.state.type=="completed") && this.state.members && this.state.applied)?<div style={{marginTop:'80px',marginBottom:'80px'}}><span className="blockTitleFont">INTERN DETAILS:</span>
+			<table className="internship1StudentMembers"><tbody><tr><th>USN</th><th>Name</th><th></th><th></th><th></th></tr>
+				{this.state.appliedUserData.map((item3,index3)=>{
+					if(item3.isMember){
+					return(
+					<tr key={index3} className="internship1StudentApplied"><td>{item3.usn}</td>
+					<td>{item3.name}</td>
+					<td><a className="internship1StudentApplied" href={"mailto:"+item3.email}><img src="mailicon.png" className="internshipIcon"/></a></td>
+					<td><a className="internship1StudentApplied" href={"tel:"+item3.phone}><img src="callicon.png" className="internshipIcon"/></a></td>
+					<td><a className="internship1StudentApplied" href={"https://wa.me/91"+item3.phone} target="_blank"><img src="whatsappicon.png" className="internshipIcon"/></a></td>
+					</tr>
+					);}
+					else{
+						return;
+					}
+				})}
+				</tbody></table>
+		</div>:""}
+		{(this.state.applied && (this.state.type=="application"||this.state.type=="ongoing"))?
+		<div style={{marginTop:'80px',marginBottom:'80px'}}><span className="blockTitleFont">APPLIED STUDENT DETAILS:</span><table className="internship1StudentApplied"><tbody>
+		<tr className="internship1StudentApplied"><th>USN<br/>Name</th><th>Sem<br/>Sec</th><th>Email<br/>Phone</th><th></th><th>Skills/ Courses/ Projects</th><th>Marks</th><th></th></tr>
+		{this.state.appliedUserData.map((item,index)=>{
+			return(<tr key={index} className={(item.shortlisted && !item.isNew)?"internship3StudentApplied":((!item.isNew && !item.shortlisted)?"internship1StudentNS":(item.isNew && item.shortlisted)?"internship1StudentApplied":"internship1StudentNS")}>
+			<td>{item.usn}<br/>{item.name}</td>
 			<td>{item.sem} {item.sec}</td>
-			<td><a className="internship1StudentApplied" href={"mailto:"+item.email}>{item.email}</a></td>
-			<td><a className="internship1StudentApplied" href={"tel:"+item.phone}>{item.phone}</a></td>
-			<td>{item.skills?item.skills.map((item1,index1)=>{return(<span key={index1}>{item1} </span>);}):""}</td>
-			<td><a className="internship1StudentApplied" href={item.resume} target="_blank">Resume</a></td>
-			<td><button onClick={()=>{this.removeFromShortlist(index)}}>&times;</button></td>
-			</tr>
-			);
-		})}
-		</tbody></table>
-		<button className="internshipMiniTest" onClick={this.sendShortlist}>Send Shortlist</button>
-		<button className="internshipMiniTest" onClick={this.finaliseShortlist}>Finalise Student List</button>
-		{this.state.progress>=60?<span className="statusText">Finalised</span>:(this.state.progress==40?<span className="statusText">Shortlist Sent</span>:"")}
+			<td><a className="internship1StudentApplied" href={"mailto:"+item.email}><img src="mailicon.png" className="internshipIcon"/></a> <a className="internship2StudentApplied" href={"tel:"+item.phone}><img src="callicon.png" className="internshipIcon"/></a> <a className="internship1StudentApplied" href={"https://wa.me/91"+item.phone} target="_blank"><img src="whatsappicon.png" className="internshipIcon"/></a></td>
+			<td>{item.resume!=""?<a className="internship1StudentApplied" href={item.resume} target="_blank">Resume</a>:"-"}</td>
+			<td>{item.skills?item.skills.map((item1,index1)=>{return(<span key={index1}>{item1}, </span>);}):""}<br/><b>Courses: </b>{item.certifCourse}<br/><b>Projects: </b>{item.projects}</td>
+			<td>{item.marks==-1?" - ":item.marks}</td>
+			<td><button className="shortlistButton" onClick={()=>{this.removeShortlist(index);}}>{item.shortlisted?<span>&times;</span>:<span>+</span>}</button></td>
+			</tr>);
+		})}</tbody></table>
+		{(this.state.type=="open"||this.state.type=="application")?<div>
+			{this.state.progress<5?<div style={{display:"block"}}>
+		<button onClick={this.applyShortlist} id="applyMtestShortlistChanges" className="internshipMiniTest">Apply Changes</button>
+		<button onClick={this.resetShortlist} className="internshipMiniTest">Reset</button>
+		{this.state.minitest.length>0?<div style={{marginLeft:'20px',marginRight:'0px',marginTop:'0px',marginBottom:'0px',display:'inline-block'}}>
+		<button className="internshipMiniTest" onClick={this.sendMiniTestNotif}>Call For Test</button> → 
+		<button className={this.state.testEnable?"btn1":"internshipMiniTest"} onClick={this.toggleTest} id="testtoggle">{this.state.testEnable?"Disable Test":"Enable Test"}</button>
+		<input type="number" max="100" min="0" placeholder="Cutoff Score" id="cutoff" style={{marginLeft:'20px'}}className="internshipMiniTest"/>
+		<button onClick={this.shortlistCutoffApply}>Apply Cutoff</button>
+		</div>:""}
+		<div id="popupMinitestNotif" className="popupMinitestNotif">
+		<input type="text" id="minitestNotifContent" placeholder="Notification Text" className="popupMinitestNotif"/>
+		<input type="date" id="minitestNotifDate" required="required"/>
+		<input type="time" id="minitestNotifTime" required="required"/>
+		<button onClick={this.completeMinitestNotif} className="popupMinitestNotif">Send</button><br/><br/>
+			</div></div>:""}
+		<div style={{border:'2px solid #eefaff',borderRadius:'8px',backgroundColor:'#eefaff',padding:'5px',margin:'5px 0px 0px 0px',display:'inline-block',width:'100%'}}>
+		<button className={this.state.progress>=2?"internshipMiniTest1":"internshipMiniTest"} onClick={this.sendShortlist}>Shortlist</button>
+		{this.state.progress>=2?<span><b>→</b> <button className={this.state.progress>=3?"internshipMiniTest1":"internshipMiniTest"} onClick={this.finaliseShortlist}>Finalize</button></span>:""}
+		{this.state.progress>=3?<span><b>→</b> <button className={this.state.progress>=4?"internshipMiniTest1":"internshipMiniTest"} onClick={this.undertakingComplete}>Undertaking Signed</button></span>:""}
+		{(this.state.progress>=4||this.state.type=="ongoing"||this.state.type=="completed")?<span className="statusText">Undertaking Signed</span>:(this.state.progress===3 || this.state.finalised)?<span className="statusText">Finalized</span>:(this.state.progress===2)?<span className="statusText">Shortlist Sent</span>:""}
+		{this.state.progress>=4?<span><b>→</b> <button className="internshipMiniTest" onClick={this.startInternship}>Start Internship Now</button></span>:""}
+		</div>
 		<p id="mailText"></p>
 		<a href="" id="confirmSend" className="internshipMiniTest" onClick={this.closeOnSend}>Confirm Send</a>
+		<br/>
+		</div>:""}
+		</div>:""}
+		
+		{(this.state.type=="ongoing"||this.state.type=="completed")?<div style={{marginTop:'50px',marginBottom:'50px'}}>
+		<span className="blockTitleFont">LINK TO BE SHARED TO RECEIVE COMPANY'S FEEDBACK ON INTERNS:</span>
+		<input type="text" value={this.state.feedbacklink} style={{width:'99%', padding:'5px'}} disabled/></div>:""}
+		{(this.state.type=="completed" && this.state.feedback)?<div style={{marginTop:'80px',marginBottom:'80px'}}>
+		<span className="blockTitleFont" style={{display:'inline-block',marginRight:'10px'}}>INTERN'S FEEDBACK: </span> 
+		<button id="internsfeedbackBtnAdminDashboard" onClick={this.expandInternsFeedback}>Expand</button>
+		<div id="internsfeedbackAdminDashboard" className="internshipFeedbackDisp" style={{display:'none'}}>
+		{this.state.iidf?<InternshipFeedbacks iid={this.state.iidf} fd={this.state.feedback} stdata={this.state.studentdata} ap={this.state.members}/>:""}
+		</div>
 		</div>:""}
 		</div>
 		);
 	}
 }
 
-class InternshipUndertaking extends React.Component{
-	constructor(){
-		super();
-		this.state={}
-		this.undertakingComplete=this.undertakingComplete.bind(this);
-	}
-	componentDidMount(){
-		let method=this.props.getStateMethod;
-		let resp1=method();
-		let resp=Object.assign({},resp1);
-		this.setState(resp);
-	}
-	undertakingComplete(){
-		firebase.database().ref("internships/internship/"+this.state.id+"/progress").set(4);
-		this.setState({progress:80});
-	}
-	render(){
-		return(
-		<div>
-		{this.state.progress>=60?
-		<div><hr/>
-		<h3 className="internship1">Undertaking</h3>
-		{this.state.progress==60?<button className="internshipMiniTest" onClick={this.undertakingComplete}>Mark as Complete</button>:<span className="statusText">Undertaking Signed</span>}
-		<br/><br/></div>:""}
-		</div>
-		);
-	}
-}
 
 class MiniTestForm extends React.Component{
 	constructor(){
@@ -800,11 +1187,31 @@ class MiniTestForm extends React.Component{
 	  this.addQuestion = this.addQuestion.bind(this);
 	  this.addQP = this.addQP.bind(this);
 	  this.removeQuestion = this.removeQuestion.bind(this);
+	  this.closeSideBar=this.closeSideBar.bind(this);
+	}
+		closeSideBar(){
+		document.getElementById("sidebar").style.visibility="hidden";
+		document.getElementById("sidebar").style.display="none";
 	}
 	changedState(e){
 	  this.setState({
 		[e.target.name]: e.target.value
 	});	
+	}
+	componentDidMount(){
+		firebase.auth().onAuthStateChanged((user) => {
+		if (user) {
+			if(!user.isAnonymous){
+			firebase.database().ref("users/"+user.uid+"/teacher").once("value").then(function(snapshot){
+			if(snapshot.val()){  }
+			else{ window.location.href="/";}
+			});}
+			else{window.location.href="/";}
+		} 
+		else{
+			window.location.href="/";
+		}
+		}); 
 	}
 	addQuestion(){
 	  let arr={question:this.state.quest,
@@ -830,7 +1237,7 @@ class MiniTestForm extends React.Component{
 		  totalMarks:this.state.q.length,
 		  questions:this.state.q
 	  }
-	  firebase.database().ref('internships/minitests/'+key1).update(item).then(()=>{ document.location.href="/";},()=>{alert("Connection Error!");});
+	  firebase.database().ref('internships/minitests/'+key1).update(item).then(()=>{ document.location.href="/admindashboard";},()=>{alert("Connection Error!");});
 	}
 	removeQuestion(item){
 	  let index=this.state.q.indexOf(item);
@@ -846,7 +1253,12 @@ class MiniTestForm extends React.Component{
 	render(){
 		return(
 		<div>
-		<Header pageTitle="Add Mini Test" userName="Sample Username" linkto={true}/>
+		<Header pageTitle="← Add New Test" linkto={true}/>
+		<div className="sidebar" id="sidebar">
+		<button className="sidebarclose" onClick={this.closeSideBar}>&times;</button>
+		<ActionsDiv onGoingLoc="/admindashboard#ongoing" applicationsLoc="/admindashboard#toselect"/>
+		</div>
+		
 		<div className="questionForm">
 			<h4>Question:</h4>
 			<input type="text" className="minitestq" name="quest" value={this.state.quest} onChange={this.changedState}/><br/>
@@ -859,7 +1271,7 @@ class MiniTestForm extends React.Component{
 			<div className="option">Option 1<input type="radio" value="1" name="canswer" onChange={this.changedState}/></div>
 			<div className="option">Option 2<input type="radio" value="2" name="canswer" onChange={this.changedState}/></div>
 			<div className="option">Option 3<input type="radio" value="3" name="canswer" onChange={this.changedState}/></div>
-			<div className="option">Option 4<input type="radio" value="4" name="canswer" onChange={this.changedState}/></div>
+			<div className="option">Option 4<input type="radio" value="4" name="canswer" onChange={this.changedState}/></div><br/>
 		<button className="btn" onClick={this.addQuestion}>Add Question</button>
 		</div>
 		<section className="prevQuestions">
@@ -878,91 +1290,6 @@ class MiniTestForm extends React.Component{
 		</ul>
 		</section>
 		<button className="btn" onClick={this.addQP}>Save Test</button>
-		</div>
-		);
-	}
-}
-
-class MiniTest extends React.Component{
-	constructor(){
-		super();
-		this.state = {
-		  q:[]
-	  }
-		this.loadQuestions=this.loadQuestions.bind(this);
-		this.submitTest=this.submitTest.bind(this);	
-		this.changedState=this.changedState.bind(this);
-	}
-	submitTest(){
-		document.getElementById("submitbtn").disabled="disabled";
-		document.getElementById("submitbtn").style.backgroundColor="darkgray";
-		let score=0,totalscore=0;
-		for(var i in this.state){
-			if(i=="q"){}
-			else{
-				let tmp2=this.state.q[i].answer-1;
-				let tmp1=this.state.q[i].answers[tmp2];
-				if(tmp1==this.state[i]){
-					score+=1;
-				}
-			}
-		}
-		totalscore=this.state.q.length;
-		let percent=(score/totalscore)*100;
-		firebase.database().ref("internships/internship/"+this.props.internship+"/minitestscores").once("value").then(function(snapshot){
-			let tmp;
-			if(snapshot.val()==null){	tmp=[];		}
-			else{	tmp=snapshot.val();}
-			tmp.push({usn:"1DS16CS000",marks:percent});
-			firebase.database().ref("internships/internship/"+this.props.internship).update({minitestscores:tmp}).then(function(){
-				document.getElementById("questions").innerHTML="<h1 class='scoreHeader'>Score:"+score+"/"+totalscore+"</h1><br/>";
-				document.getElementById("submitbtn").style.display="none";
-			});
-		});	
-	}
-	changedState(e){
-	  this.setState({
-		[e.target.name]: e.target.value
-	});	
-	}
-	loadQuestions(isnapshot,msnapshot){
-		let minitests=msnapshot.val();
-		let mids=isnapshot.val().minitest;
-		let q1=[];
-		for(var i in minitests){
-			var tmp=minitests[i].questions;
-			for(var j in tmp){
-				q1.push(tmp[j]);
-			}
-		}
-		this.setState({q:q1});
-	}
-	componentDidMount(){
-		let tmp=this.loadQuestions;
-		firebase.database().ref("internships/internship/"+this.props.internship).once("value").then(function(snapshot){
-			firebase.database().ref("internships/minitests").once("value").then(function(s){
-				tmp(snapshot,s);
-			});
-		});
-	}
-	render(){
-		return(
-		<div>
-		<Header pageTitle="Test" userName="Sample Username" linkto={false}/>
-		<div className="questions" id="questions">
-		<ul className="questions">
-		{this.state.q.map((item,index) =>{
-			return(
-			<li key={index}>
-			<div className="questionFilled">
-			<b>{item.question}</b><br/>
-			<p><input type="radio" name={index} value={item.answers[0]}onChange={this.changedState}/> {item.answers[0]}<br/><input type="radio" name={index} value={item.answers[1]} onChange={this.changedState}/> {item.answers[1]}<br/><input type="radio" name={index} value={item.answers[2]} onChange={this.changedState}/> {item.answers[2]}<br/><input type="radio" name={index} value={item.answers[3]} onChange={this.changedState}/> {item.answers[3]}</p>
-			</div>
-		</li>);
-		})}
-		</ul>
-		</div>
-		<button className="btn" id="submitbtn" onClick={this.submitTest}>End Test</button>
 		</div>
 		);
 	}
@@ -992,27 +1319,18 @@ class NewInternship extends React.Component{
 			skilloptions:[],
 			isLoading:false,
 			dateToday:"2019-01-01",
-			username:"DSCE"
+			username:"",
+			studentreq:""
 		};
 		this.addInternship = this.addInternship.bind(this);
 		this.changedState=this.changedState.bind(this);
 		this.closeSideBar=this.closeSideBar.bind(this);
-		this.loadMinitests=this.loadMinitests.bind(this);
 		this.loadSkills=this.loadSkills.bind(this);
-		this.handleTimeChange=this.handleTimeChange.bind(this);
 		this.sendNewNotification=this.sendNewNotification.bind(this);
+		this.gotoNewInternshipLink=this.gotoNewInternshipLink.bind(this);
 	}
-	loadMinitests(snapshot){
-		let vals=[];
-		for(var i in snapshot.val()){
-			let temp=snapshot.val()[i].topic;
-			let temp1={value:i,label:temp};
-			vals.push(temp1);
-		}
-		let newState=Object.assign({},this.state);
-		newState.isLoading=false;
-		newState.minitests=vals;
-		this.setState(newState);
+	gotoNewInternshipLink(){
+		window.location.href="/newinternshiplink";
 	}
 	loadSkills(snapshot){
 		let vals=[];
@@ -1025,7 +1343,22 @@ class NewInternship extends React.Component{
 		this.setState(newState);
 	}
 	componentDidMount(){
-		let tmp=this.loadMinitests;
+		firebase.auth().onAuthStateChanged((user) => {
+		if (user) {
+			if(user.isAnonymous){
+				this.setState({username:"None"});
+			}
+			else{
+				this.setState({username:"DSCE"});
+			}
+		} 
+		else{
+			firebase.auth().signInAnonymously().catch(function(error) {
+		var errorCode = error.code;
+		var errorMessage = error.message;
+		});
+		}
+		}); 
 		let tmp1=this.loadSkills;
 		let dt=new Date();
 		let str;
@@ -1041,15 +1374,13 @@ class NewInternship extends React.Component{
 		if(searchParams.get("cname")){
 			newState.cName=decodeURI(searchParams.get("cname"));
 			document.getElementById("compname").disabled="disabled";
-			newState.username=decodeURI(searchParams.get("cname"));
+			//newState.username=decodeURI(searchParams.get("cname"));
 		}
 		newState.isLoading=true;
 		newState.dateToday=str;
+		newState.minitests=[];
 		this.setState(newState);
-		firebase.database().ref("internships/minitests").once('value').then(function(snapshot){ tmp(snapshot);});
-		firebase.database().ref("internships/additional/skills").once('value').then(function(snapshot){ tmp1(snapshot);});
-
-		
+		firebase.database().ref("internships/additional/skills").once('value').then(function(snapshot){ tmp1(snapshot);});		
 	}
 	closeSideBar(){
 		document.getElementById("sidebar").style.visibility="hidden";
@@ -1060,11 +1391,8 @@ class NewInternship extends React.Component{
 		[e.target.name]: e.target.value
 	});	
 	}	
-	sendNewNotification(item,stateref){
-		
-		if(stateref==="DSCE"){
-			window.location.href="/";}
-		else{window.history.go();}
+	sendNewNotification(item,stateref){		
+		window.location.href="/newinternship";
 	}
 	addInternship(){
 		let appdt1=(new Date(this.state.adt)).valueOf();
@@ -1093,6 +1421,7 @@ class NewInternship extends React.Component{
 			companyPhone:this.state.cPhone.trim(),
 			description:this.state.desc.trim(),
 			isComplete:false,
+			remarks:"",
 			startdt:startdt1,
 			stipend:(this.state.stip?parseInt(this.state.stip):0),
 			workCategory:this.state.workcat,
@@ -1100,12 +1429,17 @@ class NewInternship extends React.Component{
 			testEnable:false,
 			title:this.state.ititle.trim(),
 			skillSet:skill,
-			minitest:mini,
+			minitest:[],
+			progress:0,
 			duration:dur1,
-			approved:false
+			approved:false,
+			minRequirement:(this.state.studentreq?parseInt(this.state.studentreq):0)
 		};
-		if(item.companyMail==""||item.companyName==""||item.title==""||item.startdt==""||item.applicationdt==""){
+		if(item.companyMail==""||item.companyName==""||item.title==""||item.startdt==""||item.applicationdt==""||item.companyPhone==""){
 			alert("Please Fill all the fields!");
+		}
+		else if(item.startdt<item.applicationdt){
+			alert("Start Date must be same as or after Apply By date.");
 		}
 		else{		
 			let sendNotification=this.sendNewNotification;
@@ -1115,9 +1449,6 @@ class NewInternship extends React.Component{
 			sendNotification(item,stateref);
 			},()=>{alert("Connection Error!");});
 		}
-	}
-	handleTimeChange(val){
-		console.log(val);
 	}
 	  handleChange = selectedOption => {
 		this.setState({ selectedOption });
@@ -1130,32 +1461,33 @@ class NewInternship extends React.Component{
 		const { minitestoptions } = this.state;
 		return(
 		<div>
-		<Header pageTitle="New Internship" userName={this.state.username} linkto={false}/>
+		{this.state.username!="DSCE"?"":
+		<Header pageTitle="← New Internship" userName={this.state.username} linkto={false}/>}
 		<div className="sidebar" id="sidebar">
 		<button className="sidebarclose" onClick={this.closeSideBar}>&times;</button>
-		<ActionsDiv onGoingLoc="/#ongoing" applicationsLoc="/#toselect"/>
+		<ActionsDiv onGoingLoc="/admindashboard#ongoing" applicationsLoc="/admindashboard#toselect"/>
 		</div>
+		{this.state.username=="DSCE"?<button className="btn" style={{marginTop:'4px'}}onClick={this.gotoNewInternshipLink}>Create Link</button>:""}
 		<div className="formClass">
 		<table className="formClass">
 		<tbody>
-		<tr className="formClass"><th className="formClass">Title:</th><td className="formClass"><input type="text" name="ititle" onChange={this.changedState}/></td></tr>
-		<tr className="formClass"><th className="formClass">Description:</th><td className="formClass"></td></tr>
-		<tr className="formClass"><td colSpan="2" className="formClass"><textarea name="desc" onChange={this.changedState}></textarea></td></tr>
-		<tr className="formClass"><th className="formClass">Company Name:</th><td className="formClass"><input type="text" name="cName" id="compname" value={this.state.cName} onChange={this.changedState}/></td></tr>
-		<tr className="formClass"><th className="formClass">Contact Email:</th><td className="formClass"><input type="email" name="cMail" onChange={this.changedState}/></td></tr>
-		<tr className="formClass"><th className="formClass">Contact Number:</th><td className="formClass"><input type="tel" name="cPhone" maxLength="12" pattern="[0-9]{8,}" onChange={this.changedState}/></td></tr>
+		<tr className="formClass"><th className="formClass">Title:*</th><td className="formClass"><input type="text" name="ititle" onChange={this.changedState}/></td></tr>
+		<tr className="formClass"><th className="formClass">Description:</th><td className="formClass"><textarea name="desc" onChange={this.changedState}></textarea></td></tr>
+		<tr className="formClass"><th className="formClass">Company Name:*</th><td className="formClass"><input type="text" name="cName" id="compname" value={this.state.cName} onChange={this.changedState}/></td></tr>
+		<tr className="formClass"><th className="formClass">Contact Email:*</th><td className="formClass"><input type="email" name="cMail" onChange={this.changedState}/></td></tr>
+		<tr className="formClass"><th className="formClass">Contact Number:*</th><td className="formClass"><input type="tel" name="cPhone" maxLength="12" pattern="[0-9]{8,}" onChange={this.changedState}/></td></tr>
 		<tr className="formClass"><th className="formClass">Company Description:</th><td className="formClass"><input type="text" name="cDesc" onChange={this.changedState}/></td></tr>
-		<tr className="formClass"><th className="formClass">Internship Start Date:</th><td className="formClass"><input type="date" name="sdt" min={this.state.dateToday} onChange={this.changedState}/></td></tr>
-		<tr className="formClass"><th className="formClass">Skills Required:</th><td className="formClass"><Select value={selectedOption} options={this.state.skilloptions} onChange={this.handleChange} isMulti={true} isLoading={this.state.isLoading}/></td></tr>
-		<tr className="formClass"><th className="formClass">Last Application Date:</th><td className="formClass"><input type="date" name="adt" min={this.state.dateToday} onChange={this.changedState}/></td></tr>
+		<tr className="formClass"><th className="formClass">Apply By Date:*</th><td className="formClass"><input type="date" name="adt" min={this.state.dateToday} onChange={this.changedState}/></td></tr>
+		<tr className="formClass"><th className="formClass">Internship Start By Date:*</th><td className="formClass"><input type="date" name="sdt" min={this.state.dateToday} onChange={this.changedState}/></td></tr>
+		<tr className="formClass"><th className="formClass">Skills Required:</th><td className="formClass"><CreatableSelect value={selectedOption} options={this.state.skilloptions} onChange={this.handleChange} isMulti={true} isLoading={this.state.isLoading}/></td></tr>
 		<tr className="formClass"><th className="formClass">Work Timings:</th><td className="formClass"><select onChange={this.changedState} name="workcat"><option value="full-time">Full Time</option>
 		<option value="part-time">Part Time</option>
 		<option value="work-from-home">Work From Home</option></select></td></tr>
-		<tr className="formClass"><th className="formClass"></th><td><input name="starttime" type="time" min="07:00" max="22:00" onChange={this.changedState} /> - <input type="time" name="endtime" min="07:00" max="22:00" onChange={this.changedState}/></td></tr>
-		<tr className="formClass"><th className="formClass">Length of Internship:</th><td className="formClass1"><input type="number" min="1" name="dur" onChange={this.changedState}/><select id="daterangeselect"><option value="months">Months</option><option value="weeks">Weeks</option></select></td></tr>
-		<tr className="formClass"><th className="formClass">Stipend (0 if not applicable):</th><td className="formClass"><input type="number" min="0" name="stip" onChange={this.changedState}/></td></tr>
-		<tr className="formClass"><th className="formClass">Mini Tests</th><td className="formClass"><Select value={minitestoptions} options={this.state.minitests} onChange={this.handleChange1} isMulti={true} isLoading={this.state.isLoading}/></td></tr>
-		<tr className="formClass"><td colSpan="2" className="formClass"><button onClick={this.addInternship}>Add</button></td></tr>
+		<tr className="formClass"><th className="formClass"></th><td><input name="starttime" type="time" min="07:00" max="22:00" onChange={this.changedState} className="formClass2"/> - <input type="time" name="endtime" min="07:00" max="22:00" onChange={this.changedState} className="formClass2"/></td></tr>
+		<tr className="formClass"><th className="formClass">Length of Internship:*</th><td className="formClass1"><input type="number" min="1" name="dur" onChange={this.changedState}/><select id="daterangeselect"><option value="months">Months</option><option value="weeks">Weeks</option></select></td></tr>
+		<tr className="formClass"><th className="formClass">Stipend (0 if not applicable):*</th><td className="formClass"><input type="number" min="0" name="stip" onChange={this.changedState}/></td></tr>
+		<tr className="formClass"><th className="formClass">Students Required:</th><td className="formClass"><input type="number" min="0" name="studentreq" onChange={this.changedState}/></td></tr>
+		<tr className="formClass"><td colSpan="2" className="formClass"><button onClick={this.addInternship} className="formClass">Add</button> * marked fields are required </td></tr>
 		</tbody></table>
 		</div>
 		</div>
@@ -1184,170 +1516,12 @@ class NewInternshipLink extends React.Component{
 	render(){
 		return(
 		<div>
-		<Header pageTitle="New Internship" userName="Sample Username"/>
+		<Header pageTitle="← Internship Link"/>
 		<div className="linkcreate">
 		<input type="text" required="required" id="compName" placeholder="Company Name" className="linkcreate"/>
 		<button onClick={this.createLink} className="linkcreate">Create Link</button><br/><br/>
 		<input type="text" id="result" className="linkcreate1"/>
 		</div>
-		</div>
-		);
-	}
-}
-
-class OpenInternship extends React.Component{
-	constructor(){
-		super();
-		this.state={
-			internship:"",
-			type:"",
-			userValid:false,
-			internshipdata:null,
-			userdata:null,
-			studentdata:null,
-			loaded:false
-		}
-		this.closeSideBar=this.closeSideBar.bind(this);
-		this.setInternshipId=this.setInternshipId.bind(this);
-		this.getState=this.getState.bind(this);
-		this.setStateMethod=this.setStateMethod.bind(this);
-	}
-
-	closeSideBar(){
-		document.getElementById("sidebar").style.visibility="hidden";
-		document.getElementById("sidebar").style.display="none";
-	}
-	setInternshipId(id1,type){
-		let newState=Object.assign({},this.state);
-		newState.internship=id1;
-		newState.type=type;
-		this.setState(newState);
-	}
-	getState(){
-		return this.state;
-	}
-	setStateMethod(st){
-		this.setState(st);
-	}
-	componentDidMount(){
-		let newState=new Object();
-		let updateState=this.setStateMethod;
-		newState.internship=null;
-		newState.type="";
-		/*let uid=firebase.auth().currentUser.uid;
-		firebase.database().ref("users/"+uid+"/teacher").once("value").then(function(snapshot){
-			if(snapshot.val()){ newState.userValid=true; }
-		});*/
-		newState.userValid=true; //Remove after integration
-		firebase.database().ref("internships/students").once("value").then(function(s){
-			newState.studentdata=s.val();
-			firebase.database().ref("internships/internship").once("value").then(function(s1){
-			newState.internshipdata=s1.val();
-			firebase.database().ref("users").once("value").then(function(s2){
-			newState.userdata=s2.val();
-			newState.loaded=true;
-			updateState(newState);
-		});
-		});
-		});
-		this.setState(newState);
-	}
-	render(){
-		return(
-		<div>
-		{this.state.userValid?<div>
-		<Header pageTitle="Admin Dashboard" userName="Sample Username" linkto={true}/>
-		<div className="sidebar" id="sidebar">
-		<button className="sidebarclose" onClick={this.closeSideBar}>&times;</button>
-		<ActionsDiv onGoingLoc="/#ongoing" applicationsLoc="/#toselect"/>
-		</div>
-		<div className="actiondiv">
-		<ActionsDiv/></div>
-		{this.state.loaded?<div>
-			{this.state.internship?
-			<Internship getStateMethod={this.getState} setInternshipIdMethod={this.setInternshipId}/>:""}
-		<OpenInternship1 getStateMethod={this.getState} setInternshipIdMethod={this.setInternshipId} setStateMethod={this.setStateMethod}/>
-		<div className="popup" id="popup"></div></div>:<div><br/><br/><h1>Loading</h1></div>}
-		</div>:<div><p className="unauthorisedAccess">Access Denied</p><span className="unauthorisedAccess">You are not allowed access to this page. If you are supposed to be able to access this page, try logging in again.</span></div>}
-		</div>
-		);
-	}
-}
-
-class CompletedInternship extends React.Component{
-constructor(){
-		super();
-		this.state={
-			internship:"",
-			type:"",
-			userValid:false,
-			internshipdata:null,
-			userdata:null,
-			studentdata:null,
-			loaded:false
-		}
-		this.closeSideBar=this.closeSideBar.bind(this);
-		this.setInternshipId=this.setInternshipId.bind(this);
-		this.getState=this.getState.bind(this);
-		this.setStateMethod=this.setStateMethod.bind(this);
-	}
-
-	closeSideBar(){
-		document.getElementById("sidebar").style.visibility="hidden";
-		document.getElementById("sidebar").style.display="none";
-	}
-	setInternshipId(id1,type){
-		let newState=Object.assign({},this.state);
-		newState.internship=id1;
-		newState.type=type;
-		this.setState(newState);
-	}
-	getState(){
-		return this.state;
-	}
-	setStateMethod(st){
-		this.setState(st);
-	}
-	componentDidMount(){
-		let newState=new Object();
-		let updateState=this.setStateMethod;
-		newState.internship=null;
-		newState.type="";
-		/*let uid=firebase.auth().currentUser.uid;
-		firebase.database().ref("users/"+uid+"/teacher").once("value").then(function(snapshot){
-			if(snapshot.val()){ newState.userValid=true; }
-		});*/
-		newState.userValid=true; //Remove after integration
-		firebase.database().ref("internships/students").once("value").then(function(s){
-			newState.studentdata=s.val();
-			firebase.database().ref("internships/internship").once("value").then(function(s1){
-			newState.internshipdata=s1.val();
-			firebase.database().ref("users").once("value").then(function(s2){
-			newState.userdata=s2.val();
-			newState.loaded=true;
-			updateState(newState);
-		});
-		});
-		});
-		this.setState(newState);
-	}
-	render(){
-		return(
-		<div>
-		{this.state.userValid?<div>
-		<Header pageTitle="Admin Dashboard" userName="Sample Username" linkto={true}/>
-		<div className="sidebar" id="sidebar">
-		<button className="sidebarclose" onClick={this.closeSideBar}>&times;</button>
-		<ActionsDiv onGoingLoc="/#ongoing" applicationsLoc="/#toselect"/>
-		</div>
-		<div className="actiondiv">
-		<ActionsDiv/></div>
-		{this.state.loaded?<div>
-			{this.state.internship?
-			<Internship getStateMethod={this.getState} setInternshipIdMethod={this.setInternshipId}/>:""}
-		<CompletedInternship1 getStateMethod={this.getState} setInternshipIdMethod={this.setInternshipId} setStateMethod={this.setStateMethod}/>
-		<div className="popup" id="popup"></div></div>:<div><br/><br/><h1>Loading</h1></div>}
-		</div>:<div><p className="unauthorisedAccess">Access Denied</p><span className="unauthorisedAccess">You are not allowed access to this page. If you are supposed to be able to access this page, try logging in again.</span></div>}
 		</div>
 		);
 	}
@@ -1385,15 +1559,15 @@ constructor(){
 		let newState=Object.assign({},t);
 		newState.internships=[];
 		for(var i in newState.internshipdata){
-			if(newState.internshipdata[i].applicationdt<dt && newState.internshipdata[i].startdt<dt && newState.internshipdata[i].isComplete==true){
-				let item=newState.internshipdata[i];
+			if(newState.internshipdata[i].startdt<dt && newState.internshipdata[i].isComplete==true){
+				let item=Object.assign({},newState.internshipdata[i]);
 				let days=item.duration;
 				item.duration=(item.duration%7==0)?((item.duration/7)+" week(s)"):((item.duration/30)+" month(s)");
 				item.appliedcount=(item.applied?item.applied.length:0);
 				item.id=i;
 				item.progress=0;
 				let dt1=new Date(item.startdt);
-				item.startdt=dt1.getDate()+"/"+(dt1.getMonth()+1)+"/"+dt1.getFullYear();
+				item.startdt1=dt1.getDate()+"/"+(dt1.getMonth()+1)+"/"+dt1.getFullYear();
 				newState.internships.push(item);
 			}
 		}
@@ -1410,7 +1584,7 @@ constructor(){
 			<div key={item.id} className="internship" onClick={()=>{this.gotoInternship(item.id)}}>
 			<h3 className="internship">{item.title}</h3>
 			<p className="internshipCompany">{item.companyName}</p>
-			<p className="internship"><span className="internship">No. of students applied: {item.appliedcount}</span><span className="internship">Duration: {item.duration}</span><span className="internship">Started On: {item.startdt}</span></p>
+			<p className="internship"><span className="internship">No. of students applied: {item.appliedcount}</span><span className="internship">Duration: {item.duration}</span><span className="internship">Started On: {item.startdt1}</span></p>
 			<a href={"tel:"+item.companyPhone} onClick={this.stopProp}><button className="internship">Call Company</button></a>
 			<a href={"mailto:"+item.companyMail} onClick={this.stopProp}><button className="internship">Email Company</button></a>
 			<h3 className="internshipStatus">Status: </h3>
@@ -1460,15 +1634,15 @@ constructor(){
 		let newState=Object.assign({},t);
 		newState.internships=[];
 		for(var i in newState.internshipdata){
-			if(newState.internshipdata[i].applicationdt>dt && newState.internshipdata[i].isComplete==false){
-				let item=newState.internshipdata[i];
+			if(newState.internshipdata[i].applicationdt>dt && newState.internshipdata[i].isComplete==false && !newState.internshipdata[i].approved){
+				let item=Object.assign({},newState.internshipdata[i]);
 				let days=item.duration;
 				item.duration=(item.duration%7==0)?((item.duration/7)+" week(s)"):((item.duration/30)+" month(s)");
 				item.appliedcount=(item.applied?item.applied.length:0);
 				item.id=i;
 				item.progress=0;
 				let dt1=new Date(item.startdt);
-				item.startdt=dt1.getDate()+"/"+(dt1.getMonth()+1)+"/"+dt1.getFullYear();
+				item.startdt1=dt1.getDate()+"/"+(dt1.getMonth()+1)+"/"+dt1.getFullYear();
 				newState.internships.push(item);
 			}
 		}
@@ -1477,13 +1651,13 @@ constructor(){
 	render(){
 		return(
 		<div className="closedDiv" id="open">
-		<h3 className="closedDiv">Open To Apply Internships</h3>
+		<h3 className="closedDiv">Approve New Internships</h3>
 		{this.state.internships.map((item) =>{
 			return(
 			<div key={item.id} className="internship" onClick={()=>{this.gotoInternship(item.id)}}>
 			<h3 className="internship">{item.title}</h3>
 			<p className="internshipCompany">{item.companyName}</p>
-			<p className="internship"><span className="internship">No. of students applied: {item.appliedcount}</span><span className="internship">Duration: {item.duration}</span><span className="internship">Started On: {item.startdt}</span></p>
+			<p className="internship"><span className="internship">No. of students applied: {item.appliedcount}</span><span className="internship">Duration: {item.duration}</span><span className="internship">Starts On: {item.startdt1}</span></p>
 			<a href={"tel:"+item.companyPhone} onClick={this.stopProp}><button className="internship">Call Company</button></a>
 			<a href={"mailto:"+item.companyMail} onClick={this.stopProp}><button className="internship">Email Company</button></a>
 			<h3 className="internshipStatus">Status: </h3>
@@ -1508,11 +1682,278 @@ constructor(){
 	}
 }
 
-class MinitestDemo extends React.Component{
-	//Requires student usn to be checked with database for enrollment and then stored accordingly, also check testEnable
+class EditInternship extends React.Component{
+	constructor(){
+		super();
+		this.state={
+			applicationdt:"",
+			companyDesc:"",
+			companyMail:"",
+			companyName:"",
+			companyPhone:"",
+			description:"",
+			duration:0,
+			startdt:"",
+			stipend:0,
+			starttime:"",
+			endtime:"",
+			title:"",
+			workCategory:"",
+			workTimings:"",
+			selectedOption:[],
+			minitestoptions:[],
+			minitests:[],
+			skilloptions:[],
+			isLoading:false,
+			dateToday:"2019-01-01",
+			username:"DSCE",
+			minRequirement:0
+		};
+		this.modifyInternship = this.modifyInternship.bind(this);
+		this.changedState=this.changedState.bind(this);
+		this.closeSideBar=this.closeSideBar.bind(this);
+		this.loadMinitests=this.loadMinitests.bind(this);
+		this.loadSkills=this.loadSkills.bind(this);
+		this.loadInternship=this.loadInternship.bind(this);
+	}
+	loadMinitests(snapshot){
+		let vals=[];
+		for(var i in snapshot.val()){
+			let temp=snapshot.val()[i].topic;
+			let temp1={value:i,label:temp};
+			vals.push(temp1);
+		}
+		let newState=Object.assign({},this.state);
+		newState.isLoading=false;
+		newState.minitests=vals;
+		this.setState(newState);
+	}
+	loadSkills(snapshot){
+		let vals=[];
+		for (var i in snapshot.val()){
+			vals.push({value:snapshot.val()[i],label:snapshot.val()[i]});
+		}
+		let newState=Object.assign({},this.state);
+		newState.isLoading=false;
+		newState.skilloptions=vals;
+		this.setState(newState);
+	}
+	loadInternship(id,mtest){		
+		firebase.database().ref("internships/internship/"+id).once("value").then((s)=>{
+			let data=s.val();
+			let dt=new Date(data.applicationdt);
+			let str=dt.getFullYear()+"-";
+			if(dt.getMonth()<9){
+				str+="0"+(dt.getMonth()+1)+"-";
+			}
+			else{
+				str+=(dt.getMonth()+1)+"-";
+			}
+			if(dt.getDate()<10){
+				str+="0"+dt.getDate();
+			}
+			else{
+				str+=dt.getDate();
+			}
+			data.applicationdt=str;
+			dt=new Date(data.startdt);
+			str=dt.getFullYear()+"-";
+			if(dt.getMonth()<9){
+				str+="0"+(dt.getMonth()+1)+"-";
+			}
+			else{
+				str+=(dt.getMonth()+1)+"-";
+			}
+			if(dt.getDate()<10){
+				str+="0"+dt.getDate();
+			}
+			else{
+				str+=dt.getDate();
+			}
+			data.startdt=str;
+			if(data.duration%30==0){ data.duration=data.duration/30; }
+			else{ 
+				data.duration=data.duration/7;
+				document.getElementById("daterangeselect").value="weeks"
+			}
+			data.selectedOption=[];
+			for(var i in data.skillSet){
+				let item={label:data.skillSet[i],value:data.skillSet[i]};
+				data.selectedOption.push(item);
+			}
+			if(data.workTimings!="-"){
+				let tim=data.workTimings.split("-");
+				data.starttime=tim[0];
+				data.endtime=tim[1];
+			}
+			data.minitestoptions=[];
+			if(data.minitest){
+			for(var i in data.minitest){
+				data.minitestoptions.push({label:mtest[data.minitest[i]].topic,value:data.minitest[i]});
+			}}
+			this.setState(data);
+		});
+	}
+	componentDidMount(){
+		firebase.auth().onAuthStateChanged((user) => {
+		if (user) {
+			if(!user.isAnonymous){
+			firebase.database().ref("users/"+user.uid+"/teacher").once("value").then(function(snapshot){
+			if(snapshot.val()){  }
+			else{ window.location.href="/";}
+			});}
+			else{window.location.href="/";}
+		} 
+		else{
+			window.location.href="/";
+		}
+		}); 
+		let tmp=this.loadMinitests;
+		let tmp1=this.loadSkills;
+		let dt=new Date();
+		let str;
+		if(dt.getMonth()<9){
+			str=dt.getFullYear()+"-0"+(dt.getMonth()+1)+"-"+dt.getDate();
+		}
+		else{
+			str=dt.getFullYear()+"-"+(dt.getMonth()+1)+"-"+dt.getDate();
+		}
+		let newState=Object.assign({},this.state);
+		let url=new URL(window.location.href);
+		let searchParams = new URLSearchParams(url.search);
+		if(searchParams.get("internship")){
+			newState.id=decodeURI(searchParams.get("internship"));
+			if(searchParams.get("copy")){
+				newState.copyi=decodeURI(searchParams.get("copy"));
+			}
+			else{
+				newState.copyi=false;
+			}
+		}
+		else{
+			newState.username="DSCE";
+		}
+		newState.isLoading=true;
+		newState.dateToday=str;
+		this.setState(newState);
+		let loadin=this.loadInternship;
+		firebase.database().ref("internships/minitests").once('value').then(function(snapshot){ tmp(snapshot);
+			loadin(newState.id,snapshot.val());
+		});
+		firebase.database().ref("internships/additional/skills").once('value').then(function(snapshot){ tmp1(snapshot);});		
+	}
+	closeSideBar(){
+		document.getElementById("sidebar").style.visibility="hidden";
+		document.getElementById("sidebar").style.display="none";
+	}
+	changedState(e){
+	  this.setState({
+		[e.target.name]: e.target.value
+	});	
+	}	
+	modifyInternship(){
+		let appdt1=(new Date(this.state.applicationdt)).valueOf();
+		let startdt1=(new Date(this.state.startdt)).valueOf();
+		let dur1;
+		if(document.getElementById("daterangeselect").value=="months"){
+			dur1=this.state.duration*30;
+		}
+		else{
+			if(this.state.duration%4==0){
+				dur1=(this.state.duration/4)*30;
+			}
+			else
+				dur1=this.state.duration*7;
+		}
+		let worktim=this.state.starttime+"-"+this.state.endtime;
+		let skill=[],mini=[];
+		for(let i in (this.state.selectedOption)){skill.push(this.state.selectedOption[i].value);}
+		for(let i in (this.state.minitestoptions)){mini.push(this.state.minitestoptions[i].value);}
+		let item={
+			applicationdt:appdt1,
+			companyDesc:this.state.companyDesc.trim(),
+			companyMail:this.state.companyMail.trim(),
+			companyName:this.state.companyName.trim(),
+			companyPhone:this.state.companyPhone.trim(),
+			description:this.state.description.trim(),
+			isComplete:false,
+			remarks:"",
+			startdt:startdt1,
+			stipend:(this.state.stipend?parseInt(this.state.stipend):0),
+			workCategory:this.state.workCategory,
+			workTimings:worktim,
+			testEnable:false,
+			title:this.state.title.trim(),
+			skillSet:skill,
+			minitest:mini,
+			duration:dur1,
+			approved:true,
+			minRequirement:(this.state.minRequirement?parseInt(this.state.minRequirement):0)
+		};
+		if(item.companyMail==""||item.companyName==""||item.title==""||item.startdt==""||item.applicationdt==""){
+			alert("Please Fill all the fields!");
+		}
+		else if(item.startdt<item.applicationdt){
+			alert("Start Date must be after last application date.");
+		}
+		else{	
+			if(this.state.copyi){
+			let sendNotification=this.sendNewNotification;
+			let newKey=firebase.database().ref("internships/internship").push().key;
+			firebase.database().ref('internships/internship/'+newKey).update(item).then(()=>{ 
+			alert("Internship Copied");
+			window.location.href="/admindashboard";
+			},()=>{alert("Connection Error!");});
+			}
+			else{
+			let sendNotification=this.sendNewNotification;
+			firebase.database().ref('internships/internship/'+this.state.id).update(item).then(()=>{ 
+			alert("Internship Updated");
+			window.location.href="/admindashboard";
+			},()=>{alert("Connection Error!");});
+			}
+		}
+	}
+	  handleChange = selectedOption => {
+		this.setState({ selectedOption });
+	  };
+   handleChange1 = minitestoptions => {
+    this.setState({ minitestoptions });
+  };
 	render(){
+		const { selectedOption } = this.state;
+		const { minitestoptions } = this.state;
 		return(
-		<MiniTest internship="-LjX395C_TnAu81urkqY"/>
+		<div>
+		<Header pageTitle="← Edit Internship" userName={this.state.username} linkto={false}/>
+		<div className="sidebar" id="sidebar">
+		<button className="sidebarclose" onClick={this.closeSideBar}>&times;</button>
+		<ActionsDiv onGoingLoc="/admindashboard#ongoing" applicationsLoc="/admindashboard#toselect"/>
+		</div>
+		<div className="formClass">
+		<table className="formClass">
+		<tbody>
+		<tr className="formClass"><th className="formClass">Title:</th><td className="formClass"><input type="text" name="title" value={this.state.title} onChange={this.changedState}/></td></tr>
+		<tr className="formClass"><th className="formClass">Description:</th><td className="formClass"><textarea name="description" value={this.state.description} onChange={this.changedState}></textarea></td></tr>
+		<tr className="formClass"><th className="formClass">Company Name:</th><td className="formClass"><input type="text" name="companyName" id="compname" value={this.state.companyName} onChange={this.changedState}/></td></tr>
+		<tr className="formClass"><th className="formClass">Contact Email:</th><td className="formClass"><input type="email" name="companyMail" onChange={this.changedState} value={this.state.companyMail}/></td></tr>
+		<tr className="formClass"><th className="formClass">Contact Number:</th><td className="formClass"><input type="tel" name="companyPhone" maxLength="12" pattern="[0-9]{8,}" onChange={this.changedState} value={this.state.companyPhone}/></td></tr>
+		<tr className="formClass"><th className="formClass">Company Description:</th><td className="formClass"><input type="text" name="companyDesc" onChange={this.changedState} value={this.state.companyDesc}/></td></tr>
+		<tr className="formClass"><th className="formClass">Internship Start Date:</th><td className="formClass"><input type="date" name="startdt" value={this.state.startdt} onChange={this.changedState}/></td></tr>
+		<tr className="formClass"><th className="formClass">Last Application Date:</th><td className="formClass"><input type="date" name="applicationdt" value={this.state.applicationdt} onChange={this.changedState}/></td></tr>
+		<tr className="formClass"><th className="formClass">Skills Required:</th><td className="formClass"><CreatableSelect value={selectedOption} options={this.state.skilloptions} onChange={this.handleChange} isMulti={true} isLoading={this.state.isLoading}/></td></tr>
+		<tr className="formClass"><th className="formClass">Work Timings:</th><td className="formClass"><select onChange={this.changedState} value={this.state.workCategory} name="workCategory"><option value="full-time">Full Time</option>
+		<option value="part-time">Part Time</option>
+		<option value="work-from-home">Work From Home</option></select></td></tr>
+		<tr className="formClass"><th className="formClass"></th><td><input name="starttime" type="time" min="07:00" max="22:00" onChange={this.changedState} className="formClass2" value={this.state.starttime}/> - <input type="time" name="endtime" min="07:00" max="22:00" onChange={this.changedState} value={this.state.endtime} className="formClass2"/></td></tr>
+		<tr className="formClass"><th className="formClass">Length of Internship:</th><td className="formClass1"><input type="number" min="1" name="duration" value={this.state.duration} onChange={this.changedState}/><select id="daterangeselect"><option value="months">Months</option><option value="weeks">Weeks</option></select></td></tr>
+		<tr className="formClass"><th className="formClass">Stipend (0 if not applicable):</th><td className="formClass"><input type="number" min="0" name="stipend" value={this.state.stipend} onChange={this.changedState}/></td></tr>
+		<tr className="formClass"><th className="formClass">Min. Student Requirement:</th><td className="formClass"><input type="number" name="minRequirement" min="0" value={this.state.minRequirement} onChange={this.changedState}/></td></tr>
+		<tr className="formClass"><th className="formClass">Mini Tests</th><td className="formClass"><Select value={minitestoptions} options={this.state.minitests} onChange={this.handleChange1} isMulti={true} isLoading={this.state.isLoading}/></td></tr>
+		<tr className="formClass"><td colSpan="2" className="formClass"><button onClick={this.modifyInternship} className="formClass">{this.state.copyi?"Copy":"Edit"}</button></td></tr>
+		</tbody></table>
+		</div>
+		</div>
 		);
 	}
 }
@@ -1520,81 +1961,165 @@ class MinitestDemo extends React.Component{
 class SendNotification extends React.Component{
 	constructor(){
 		super();
+		this.state={};
 		this.updateDatabase=this.updateDatabase.bind(this);
-		this.gotoHome=this.gotoHome.bind(this);
 	}
-	gotoHome(){
-		window.location.href="/";
+	componentDidMount(){
+		firebase.auth().onAuthStateChanged((user) => {
+		if (user) {
+			if(!user.isAnonymous){
+			firebase.database().ref("users/"+user.uid+"/teacher").once("value").then(function(snapshot){
+			if(snapshot.val()){  }
+			else{ window.location.href="/";}
+			});}
+			else{window.location.href="/";}
+		} 
+		else{
+			window.location.href="/";
+		}
+		}); 
 	}
 	updateDatabase(){
+		document.getElementById("loadingShow").style.display="block";
+		setTimeout(function(){document.getElementById("loadingShow").style.display="none"; alert("Notifications Sent");},5000);
 		let content=document.getElementById("notification1").value;
+		let notifItem={
+			internshipid:"Admin",
+			notifText:content
+		};
+		if(document.getElementById("notification3").value.trim()!=""){notifItem.gotoLink=document.getElementById("notification3").value.trim();}
 		let studentlist=document.getElementById("notification2").value.split(",");
 		let students=[];
-		/*for(var i in studentlist){
-			if(studentlist[i].trim().matches("/^[1-8][A-D]$/")){
-				let val=studentlist[i].trim();
-				val=val[0];
-				let semstudents=[];
-				firebase.database().ref("users").orderByChild("sem").equalTo(val).once("value").then(function(snapshot){
-					for(var k in snapshot.val()){
-						let tmp=snapshot.val()[k];
-						val=studentslist[i].trim();
-						val=val[1];
-						if(val=='A' && tmp.sec=="A"){
-							students.push(tmp.usn);
-						}
-						else if(val=="B" && tmp.sec=="B"){
-							students.push(tmp.usn);
-						}
-						else if(val=="C" && tmp.sec=="C"){
-							students.push(tmp.usn);
-						}
-						else if(val=="D" && tmp.sec=="D"){
-							students.push(tmp.usn);
-						}
-						else{
-							alert("Not a valid class");
-							window.location.href="/";
-						}
-					}
-					
-				});
-			}
-			else if(studentlist[i].trim()=="All"||studentlist[i].trim()=="ALL")){
-				firebase.database().ref("users").orderByChild("usn").once("value").then(function(snapshot){
-					for(var l in snapshot.val()){
-						
-					}
-				});
-			}
-		}*/
-		//TODO Add student by section, all, semester
+		for(var j in studentlist){
+			let tmp=studentlist[j].trim().toUpperCase();
+			students.push(tmp);
+		if(tmp=="ALL"||tmp=="All"||tmp=="all"){
+			firebase.database().ref("internships/students").once("value").then(function(s){
+				let st=s.val();
+				for(var k in st){
+					let notif=st[k].notifications;
+					notif.push(notifItem);
+					firebase.database().ref("internships/students/"+k+"/notifications").set(notif);
+				}
+			});			
+			break;
+		}
+		}
 		for(var i in students){
 			firebase.database().ref("internships/students").orderByChild("usn").equalTo(students[i]).once("value").then(function(snapshot){
 				let notif=[];
 				for(var j in snapshot.val()){
 					if(snapshot.val()[j].notifications!=null){	notif=snapshot.val()[j].notifications;}
-					notif.push({internshipid:"Admin",text:content});
+					notif.push(notifItem);
 					firebase.database().ref("internships/students/"+j+"/notifications").update(notif);
 					break;
 				}
 			});
 		}
-		alert("Notification Sent");
-	}
+}
 	render(){
 		return(
-		<div className="notification">
-		<button onClick={this.gotoHome} className="notification">&times;</button>
-		<h3 className="notification">Notification Content:</h3>
-		<input className="notification" type="text" id="notification1"/><br/>
-		<h3 className="notification">Student List(seperated by commas):</h3>
-		<input type="text" id="notification2" className="notification"/><br/>
+		<div>
+		<Header pageTitle="← Custom Notification"/>
+		<div className="notificationAdmin">
+		<h3 className="notificationAdmin">Notification Content:</h3>
+		<input className="notificationAdmin" type="text" id="notification1"/><br/>
+		<h3 className="notificationAdmin">Link (If Any, start with http://):</h3>
+		<input className="notificationAdmin" type="url" placeholder="Link" id="notification3"/><br/>
+		<h3 className="notificationAdmin">Student List (Separated By Commas):</h3>
+		<input type="text" id="notification2" className="notificationAdmin"/><br/>
 		<button onClick={this.updateDatabase} className="btn">Send</button>
+		<br/><br/>
+		<img className="loadicon" src="loadingicon.png" id="loadingShow"/>
+		</div>
 		</div>
 		);
 	}
 }
 
+class StudentFeedbackCompany extends React.Component{
+	constructor(){
+		super();
+		this.state={
+			iid:"",
+			memberdata:[]
+		};
+		this.updateName=this.updateName.bind(this);
+		this.updateFeedback=this.updateFeedback.bind(this);
+		this.submitFeedbackStudent=this.submitFeedbackStudent.bind(this);
+	}
+	updateName(name,id){
+		let memd=this.state.memberdata;
+		for(var k in memd){
+			if(memd[k].uid==id){
+				memd[k].name=name;
+				break;
+			}
+		}
+		this.setState({memberdata:memd});
+	}
+	updateFeedback(key,val){
+		let memd=this.state.memberdata;
+		memd[key].fd=val;
+		this.setState({memberdata:memd});
+	}
+	submitFeedbackStudent(){
+		firebase.database().ref("internships/internship/"+this.state.iid+"/studentFeedbackByCompany").set(this.state.memberdata).then(()=>{
+			document.getElementById("feedbackStudentCompanyHeader").innerHTML="Thank you for the feedback";
+			document.getElementById("feedbackListForm").style.display="none";
+		});
+	}
+	componentDidMount(){
+		firebase.auth().onAuthStateChanged((user) => {
+		if (user) {
+		} 
+		else{
+			firebase.auth().signInAnonymously().catch(function(error) {
+		var errorCode = error.code;
+		var errorMessage = error.message;
+		});
+		}
+		}); 
+		let url=new URL(window.location.href);
+		let searchParams = new URLSearchParams(url.search);
+		if(searchParams.get("internship")){
+			let inter=decodeURI(searchParams.get("internship"));
+			this.setState({iid:inter});
+			firebase.database().ref("internships/internship/"+inter).once("value").then((snapshot)=>{ 
+				this.setState(snapshot.val());
+				let memberd=[];
+				for(var i in snapshot.val().members){
+					let item={uid:snapshot.val().members[i],name:"",fd:""};
+					memberd.push(item);
+				}
+				this.setState({memberdata:memberd});
+				for(var i in snapshot.val().members){
+					let u=snapshot.val().members[i];
+					firebase.database().ref("internships/students/"+u+"/fullName").once("value").then((snapshot1)=>{
+						this.updateName(snapshot1.val(),u);
+					});
+				}
+			});
+		}
+	}
+	render(){
+		return(
+		<div>
+		<div className="header">
+		<img className="icon" src="DSILogo.png" alt="Logo"/><span className="header">Student Feedback</span>
+		</div>
+		<h5 id="feedbackStudentCompanyHeader">Please provide feedback about the student(s) involved</h5>
+		<div id="feedbackListForm">
+		{this.state.memberdata.map((item,index)=>{return(
+		<table className="studentFeedbackInternship" key={index}><tbody>
+		<tr><th className="studentFeedbackInternship">Name: </th><td className="studentFeedbackInternship">{item.name}</td></tr>
+		<tr><th className="studentFeedbackInternship">Feedback:</th><td className="studentFeedbackInternship"><textarea className="studentFeedbackInternship" onChange={(e)=>{this.updateFeedback(index,e.target.value)}}></textarea></td></tr>
+		<tr><td colSpan="2"><hr/></td></tr>
+		</tbody></table>
+		);})}
+		<button className="btn" onClick={this.submitFeedbackStudent}>Submit</button></div>
+		</div>);
+	}
+}
 
-export {MainPage, NewInternship, NewInternshipLink, MiniTestForm, Internship, OpenInternship, CompletedInternship, SendNotification};
+export {MainPage, NewInternship, NewInternshipLink, MiniTestForm, Internship, SendNotification, EditInternship, StudentFeedbackCompany, SkillSearch};
