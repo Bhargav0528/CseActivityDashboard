@@ -68,8 +68,11 @@ export default class ProjDashBoard extends Component {
                 teammem[child.key] = child.val().fullName
             })
 
-            Object.values(snap.val()).map(proj => {
-                console.log(projCtr)
+            
+
+            Object.entries(snap.val()).map(([keyproj, proj]) => {
+
+                console.log("Entries", keyproj, proj)
                 if(projCtr%3==0)
                 {
                     if(projCtr!=0)
@@ -117,16 +120,16 @@ export default class ProjDashBoard extends Component {
                 project.push(<Cell col={4} >
                   
                   <Card id={`card${projCtr}`} style={{ width: '300px',height:'300px', borderRadius:'20px',boxShadow:'0 4px 8px 0 rgba(0,0,0,0.2), 0 8px 20px 0 rgba(0,0,0,0.2)' }} >
-                    <div style={{display: 'flex',flexDirection:'column', borderTopLeftRadius:'20px', borderTopRightRadius:'20px', width:'100%', height:'15%', backgroundColor:'#FEDA6A', alignItems:'center', justifyContent:'center', justifyItems:'center'}}> 
+                    <div style={{display: 'flex',flexDirection:'column', borderTopLeftRadius:'20px', borderTopRightRadius:'20px', width:'100%', height:'15%', backgroundColor:'#ffe082', alignItems:'center', justifyContent:'center', justifyItems:'center'}}> 
                       <div>
-                        <Card.Text style={{flex:1, height:'100%',fontFamily:'MONTSERRAT-SEMIBOLD'}}>{proj.title}</Card.Text>
+                        <Card.Text style={{flex:1, height:'100%',fontFamily:'MONTSERRAT-SEMIBOLD',}}>{proj.title}</Card.Text>
                       </div>
                     </div>
                     <div style={{width:'100%',height:'70%'}}> 
                       <img id={`img${projCtr}`} className="img-hover-zoom" src={images[rand]} />
                       <div id={`descp${projCtr}`} style={{paddingLeft:'20px', paddingRight:'20px'}}
                       className="description" onMouseOver={this.imageover.bind(this, `${projCtr}`)} 
-                      onMouseOut={this.imageOut.bind(this, `${projCtr}`)}>
+                      onMouseOut={this.imageOut.bind(this, `${projCtr}`)} onClick={() => this.props.history.push(`/project/${keyproj}`)}>
                       <p style={{fontFamily:'MONTSERRAT-SEMIBOLD'}} >{this.maxLength(proj.description, 100)}</p>
                       <br/><br/>
                       <p style={{fontFamily:'MONTSERRAT-SEMIBOLD', color:"#FEDA6A"}} > Team : {member}</p>
